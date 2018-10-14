@@ -106,5 +106,5 @@ venv.bak/
 # MacOs crap
 .DS_Store
 
-# Test data file (too big)
-Project1/data/test.csv
+# Data folder
+Project1/all/
