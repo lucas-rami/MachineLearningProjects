@@ -90,3 +90,20 @@ filename = 'results/least_squares_implementation_Degree_2_no_outliers.csv'
 create_csv_submission(ids_te,y_predSq_noOut,filename)
 
 print("CSV File saved as " + filename)
+
+# Quadratic model, no outlier features
+
+print("Generating degree 2 polynomial of data...")
+tx_trSq_noOutFeatures = build_poly(tx_tr_noOutFeatures, degree)
+tx_teSq_noOutFeatures = build_poly(tx_te_noOutFeatures, degree)
+print("Done!")
+
+print("Solving least squares for degree 2 polynomial of data...")
+weightsSq_noOutFeatures,lossSq_noOutFeatures = least_squares(y_tr,tx_trSq_noOutFeatures)
+y_predSq_noOutFeatures = predict_labels(weightsSq_noOutFeatures,tx_teSq_noOutFeatures)
+print("Done!")
+
+filename = 'results/least_squares_implementation_Degree_2_no_outlier_features.csv'
+create_csv_submission(ids_te,y_predSq_noOutFeatures,filename)
+
+print("CSV File saved as " + filename)
