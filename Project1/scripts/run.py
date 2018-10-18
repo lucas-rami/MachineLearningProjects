@@ -24,7 +24,7 @@ print("CSV File saved as " + filename)
 
 # Remove outliers
 
-print("Removing outliers from input data...")
+print("Removing outlier data from input data...")
 tx_tr_noOut = tx_tr[np.invert(np.any(np.isin(tx_tr, -999), 1))]
 y_tr_noOut = y_tr[np.invert(np.any(np.isin(tx_tr, -999), 1))]
 print("Done!")
@@ -35,6 +35,23 @@ y_pred_noOut = predict_labels(weights_noOut,tx_te)
 print("Done!")
 
 filename = 'results/least_squares_implementation_no_outliers.csv'
+create_csv_submission(ids_te,y_pred_noOut,filename)
+
+print("CSV File saved as " + filename)
+
+# Remove outlier features
+
+print("Removing outlier features from input data...")
+tx_tr_noOutFeatures = tx_tr[:, np.invert(np.any(np.isin(tx_tr, -999), 0))]
+tx_te_noOutFeatures = tx_te[:, np.invert(np.any(np.isin(tx_tr, -999), 0))]
+print("Done!")
+
+print("Solving least squares without outlier features...")
+weights_noOutFeatures,loss_noOutFeatures = least_squares(y_tr,tx_tr_noOutFeatures)
+y_pred_noOutFeatures = predict_labels(weights_noOutFeatures,tx_te_noOutFeatures)
+print("Done!")
+
+filename = 'results/least_squares_implementation_no_outlier_features.csv'
 create_csv_submission(ids_te,y_pred_noOut,filename)
 
 print("CSV File saved as " + filename)
