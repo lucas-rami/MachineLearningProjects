@@ -15,6 +15,7 @@ def k_fold_cross_validation(k, y, tx, fun_make_model, fun_make_model_args):
         fun_make_model_args ([...]): Arguments list for fun_make_model (except y and tx).
     Returns:
         float: Average of the k test errors
+        D * 1 vector: Average of all weights
     """
 
     # k must be positive
@@ -24,8 +25,9 @@ def k_fold_cross_validation(k, y, tx, fun_make_model, fun_make_model_args):
     # Number of datapoints
     nb_data = tx.shape[0]
 
-    # Accumulator for test error
+    # Accumulators
     acc_test_error = 0.
+    acc_weights = np.zeros( (tx.shape[1], k) )
 
     for i in range(k):
 
@@ -45,8 +47,9 @@ def k_fold_cross_validation(k, y, tx, fun_make_model, fun_make_model_args):
         e = y_test - tx_test.dot(weights)
         test_error = implementations.compute_mse(e)
 
-        # Accumulate the result
+        # Accumulate the results
         acc_test_error += test_error
+        acc_weights[:,i] = weights
 
-    return acc_test_error / k
+    return acc_test_error / k, weights.sum(axis=1) / k 
 
