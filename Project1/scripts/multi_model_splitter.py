@@ -9,7 +9,7 @@ import proj1_helpers
 
 def multi_model_datasets_creation(y_tr,tx_tr,tx_te,feature_column_index,preprocess_func,preprocess_func_args,solve_function,solve_function_args):
     '''Return the prediction given a data processing function (like build_poly)'''
-    categorization_values, counts = np.unique(tx_tr[:,feature_column_index], return_counts=True)
+    categorization_values, _ = np.unique(tx_tr[:,feature_column_index], return_counts=True)
     num_models = len(categorization_values)
     
     tx_tr_array = list()
