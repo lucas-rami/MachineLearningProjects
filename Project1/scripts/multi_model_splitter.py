@@ -5,6 +5,7 @@
         y_pred = multi_model_datasets_creation(y_tr,tx_tr_modified,tx_te_modified,22,build_poly,[6],ridge_regression,[lambda_])
 """
 import numpy as np
+import proj1_helpers
 
 def multi_model_datasets_creation(y_tr,tx_tr,tx_te,feature_column_index,preprocess_func,preprocess_func_args,solve_function,solve_function_args):
     '''Return the prediction given a data processing function (like build_poly)'''
@@ -47,7 +48,7 @@ def multi_model_datasets_creation(y_tr,tx_tr,tx_te,feature_column_index,preproce
             weights_array.append(weight)
             loss_array.append(loss)
         
-        y_pred_array.append(predict_labels(weights_array[i],tx_te_preprocess_array[i]))
+        y_pred_array.append(proj1_helpers.predict_labels(weights_array[i],tx_te_preprocess_array[i]))
     
         # we get the prediction back in the correct order
         

@@ -52,7 +52,7 @@ def least_squares_GD(y, tx, initial_w, max_iters, gamma):
     """Performs a linear regression using gradient descent"""
     # Initialize the weights
     w = initial_w
-    for n_iter in range(max_iters):
+    for _ in range(max_iters):
         # Compute the error
         e = compute_error(y, tx, w)
         # Compute the least squares gradient
