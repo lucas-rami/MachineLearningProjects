@@ -11,8 +11,8 @@ print("Loading test data...")
 _,tx_te,ids_te = load_csv_data('../all/test.csv')
 print("Done!")
 
-lambdas = np.logspace(-5, 0, 12)
-k = 5
+lambdas = np.logspace(-10, 0, 21)
+k = 10
 max_degree = 10
 ws_best, best_degrees = find_best_poly(k, y_tr, tx_tr, ridge_regression, max_degree, lambdas)
 print("Best degrees found!")
