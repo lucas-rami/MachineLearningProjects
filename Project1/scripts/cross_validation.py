@@ -31,17 +31,17 @@ def k_fold_cross_validation(k, y, tx, fun_make_model, fun_make_model_args):
 
     for i in range(k):
 
-        # Create training and testing sets        
+        # Create training and testing sets
         indices = np.where(np.fromfunction(lambda x: x % k, (nb_data,), dtype=int) == i)
         indices_neg = np.where(np.fromfunction(lambda x: x % k, (nb_data,), dtype=int) != i)
 
-        tx_training = tx[indices_neg] 
+        tx_training = tx[indices_neg]
         tx_test = tx[indices]
         y_training = y[indices_neg]
         y_test = y[indices]
 
         # Compute our model
-        weights, _ = fun_make_model(y_training, tx_training, *fun_make_model_args)
+        weights, _ = fun_make_model(y_training, tx_training, fun_make_model_args)
 
         # Compute the test error
         e = y_test - tx_test.dot(weights)
@@ -51,5 +51,4 @@ def k_fold_cross_validation(k, y, tx, fun_make_model, fun_make_model_args):
         acc_test_error += test_error
         acc_weights[:,i] = weights
 
-    return acc_test_error / k, weights.sum(axis=1) / k 
-
+    return acc_test_error / k, acc_weights.sum(axis=1) / k
