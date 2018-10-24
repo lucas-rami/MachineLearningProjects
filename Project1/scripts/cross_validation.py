@@ -11,11 +11,11 @@ def k_fold_cross_validation(k, y, tx, fun_make_model, fun_make_model_args):
         k (int): Number of folds used for cross validation.
         y (N x 1 vector): Labels vector.
         tx (N x D matrix): Features matrix (already pre-processed).
-        fun_make_model (*function(...) return (weights,loss)): Function that computes a model for the given features.
+        fun_make_model (*function(...) return (weights,loss)): Function that computes a model.
         fun_make_model_args ([...]): Arguments list for fun_make_model (except y and tx).
     Returns:
-        float: Average of the k test errors
-        D * 1 vector: Average of all weights
+        float: Average of all test errors.
+        D x 1 vector: Average of all weights.
     """
 
     # k must be positive
