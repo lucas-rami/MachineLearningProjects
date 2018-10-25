@@ -43,7 +43,24 @@ def batch_iter(y, tx, batch_size, num_batches=1, shuffle=True):
         end_index = min((batch_num + 1) * batch_size, data_size)
         if start_index != end_index:
             yield shuffled_y[start_index:end_index], shuffled_tx[start_index:end_index]
-            
+
+def sigmoid(t):
+    """apply sigmoid function on t."""
+    # Compute the sigmoid function
+    return np.divide(np.exp(t),(1+np.exp(t)))
+
+def calculate_loss_neg_log_likelihood(y, tx, w):
+    """compute the cost by negative log likelihood."""
+    losses = np.exp(tx.dot(w))
+    losses = np.log(1+losses)
+    losses = losses-np.multiply(y, tx.dot(w))
+    return np.sum(losses)
+
+def calculate_gradient_neg_log_likelihood(y, tx, w):
+    """compute the gradient of negative log likelihood loss."""
+    a = sigmoid(tx.dot(w))-y
+    return tx.T.dot(a)
+
 #************************************************
 # Functions to implement
 #************************************************
@@ -66,7 +83,7 @@ def least_squares_GD(y, tx, initial_w, max_iters, gamma):
 
 
 def least_squares_SGD(y, tx, initial_w, max_iters, gamma):
-    """Performs a linear regression using gradient descent"""
+    """Performs a linear regression using stochastic gradient descent"""
     # Initialize the weights
     w = initial_w
     batch_size = 1
@@ -96,7 +113,7 @@ def least_squares(y, tx):
     # Compute the loss
     loss = compute_mse(e)
     return w, loss
-    
+
 def ridge_regression(y, tx, lambda_):
     """Performs a ridge regression using the normal equations"""
     # Compute the vector b
@@ -112,10 +129,23 @@ def ridge_regression(y, tx, lambda_):
     # Compute the loss
     loss = compute_mse(e)
     return w, loss
-    
+
 def logistic_regression(y, tx, initial_w, max_iters, gamma):
-    """Performs a linear regression using gradient descent or SGD"""
-    
+    """Performs a logistic regression using gradient descent"""
+    loss = float('inf')
+    w = initial_w
+    for iter in range(max_iters):
+        # Compute the loss
+        newLoss = calculate_loss_neg_log_likelihood(y, tx, w)
+        # Compute the gradient
+        grad = calculate_gradient_neg_log_likelihood(y, tx, w)
+        # Update the weights
+        w = w - gamma*grad
+        if newLoss-loss < 1e-8:
+            return w, newLoss
+        loss = newLoss
+        print("Iteration", iter)
+    return w, loss
+
 def reg_logistic_regression(y, tx, lambda_, initial_w, max_iters, gamma):
-     """Performs a regularzed linear regression using gradient descent or SGD"""   
-    
+     """Performs a regularized logistic regression using gradient descent"""

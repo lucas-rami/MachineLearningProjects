@@ -2,6 +2,8 @@ from implementations import *
 from proj1_helpers import *
 from manipulate_data import *
 from best_poly import *
+from multi_model_splitter import *
+from cross_validation import *
 
 print("Loading training data...")
 y_tr,tx_tr,ids_tr = load_csv_data('../all/train.csv')
@@ -20,16 +22,11 @@ for i in range(0,tx_tr.shape[1]):
     tx_tr_modified[:,i][tx_tr[:,i] == -999] = feature_mean_tr
     tx_te_modified[:,i][tx_te[:,i] == -999] = feature_mean_te
 
+print("Making predictions...")
 lambdas = np.logspace(-10, 0, 21)
 k = 5
-max_degree = 3
-ws_best, best_degrees, best_te = find_best_poly(k, y_tr, tx_tr_modified, ridge_regression, max_degree, lambdas)
-print("Best degrees found!, test error:", best_te)
-
-print("Making predictions...")
-tx_te_diff_poly = build_poly_diff_degrees(tx_te_modified, best_degrees)
-y_pred = predict_labels(ws_best,tx_te_diff_poly)
+y_pred = multi_model_datasets_creation(y_tr,tx_tr_modified,tx_te_modified,22,build_poly,[6],lambdas, k)
 print("Done!")
 
-filename = 'results/best_poly_ridge_mean_outliers.csv'
+filename = 'results/logistic_reg_squared.csv'
 create_csv_submission(ids_te,y_pred,filename)
