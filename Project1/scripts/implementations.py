@@ -47,7 +47,7 @@ def batch_iter(y, tx, batch_size, num_batches=1, shuffle=True):
 def sigmoid(t):
     """apply sigmoid function on t."""
     # Compute the sigmoid function
-    return np.divide(np.exp(t),(1+np.exp(t)))
+    return 1 / (1 + np.exp(-t))
 
 def calculate_loss_neg_log_likelihood(y, tx, w):
     """compute the cost by negative log likelihood."""
@@ -141,11 +141,25 @@ def logistic_regression(y, tx, initial_w, max_iters, gamma):
         grad = calculate_gradient_neg_log_likelihood(y, tx, w)
         # Update the weights
         w = w - gamma*grad
-        if newLoss-loss < 1e-8:
-            return w, newLoss
+        #if newLoss-loss < 1e-8:
+        #    return w, newLoss
         loss = newLoss
-        print("Iteration", iter)
+        print("Iteration: " + str(iter) + " loss : "  + str(loss))
     return w, loss
-
+        
 def reg_logistic_regression(y, tx, lambda_, initial_w, max_iters, gamma):
-     """Performs a regularized logistic regression using gradient descent"""
+    """Performs a regularized logistic regression using gradient descent"""
+    loss = float('inf')
+    w = initial_w
+    for iter in range(max_iters):
+        # Compute the loss
+        newLoss = calculate_loss_neg_log_likelihood(y, tx, w) + lambda_ * (w.T.dot(w)) / 2.0
+        # Compute the gradient
+        grad = calculate_gradient_neg_log_likelihood(y, tx, w) + 2.0 * lambda_ * w
+        # Update the weights
+        w = w - gamma*grad
+        #if newLoss-loss < 1e-8:
+        #    return w, newLoss
+        loss = newLoss
+        print("Iteration: " + str(iter) + " loss : "  + str(loss))
+    return w, loss
