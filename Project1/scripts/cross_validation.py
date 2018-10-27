@@ -23,22 +23,28 @@ def k_fold_cross_validation(k, y, tx, fun_make_model, fun_make_model_args):
         raise ValueError("Parameter k must be strictly positive")
 
     # Number of datapoints
-    nb_data = tx.shape[0]
+    data_size = tx.shape[0]
 
     # Accumulators
     acc_test_error = 0.
     acc_weights = np.zeros( (tx.shape[1], k) )
 
+    # Create random partioning of data
+    shuffle_indices = np.random.permutation(np.arange(data_size))
+
     for i in range(k):
 
-        # Create training and testing sets
-        indices = np.where(np.fromfunction(lambda x: x % k, (nb_data,), dtype=int) == i)
-        indices_neg = np.where(np.fromfunction(lambda x: x % k, (nb_data,), dtype=int) != i)
+        start_index = i * k
+        end_index = min((i + 1) * k, data_size)
 
-        tx_training = tx[indices_neg]
-        tx_test = tx[indices]
-        y_training = y[indices_neg]
-        y_test = y[indices]
+        # Test data for this iteration
+        y_test = y[ shuffle_indices[start_index:end_index] ]
+        tx_test = tx[ shuffle_indices[start_index:end_index] ]
+
+        # Training data for this iteration
+        indices_training = np.concatenate( (shuffle_indices[:start_index], shuffle_indices[end_index:]) , axis=0)
+        tx_training = tx[ indices_training ]
+        y_training = y[ indices_training ]
 
         # Compute our model
         weights, _ = fun_make_model(y_training, tx_training, fun_make_model_args)
