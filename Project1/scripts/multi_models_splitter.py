@@ -1,17 +1,18 @@
 # -*- coding: utf-8 -*-
-"""A function to split the data and work with multiple models
-"""
+"""Multi-models based on categorizing feature"""
+
 import numpy as np
 from proj1_helpers import predict_labels
 from cross_validation import k_fold_cross_validation
 
 def multi_model_splitter(y, tx, feature_column_index, k, fun_model, fun_model_args):
-    """Performs cross validation on the dataset.
+    """Creates a predictions vector by creating different models based on the value
+    of a categorizing feature in the dataset.
 
     Args:
         y (N x 1 vector): Labels vector.
         tx (N x D matrix): Features matrix (already pre-processed).
-        feature_column_index (int): Classifier feature index
+        feature_column_index (int): Categorizing feature's column index.
         k (int): Number of folds used for cross validation.
         fun_model (*function(...) return (weights,loss)): Function that computes a model.
         fun_model_args ([...]): Arguments list for fun_model (except y and tx).
