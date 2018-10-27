@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-""" Cross validation """
+"""Cross validation"""
 
 import numpy as np
 import implementations
@@ -15,8 +15,8 @@ def k_fold_cross_validation(y, tx, k, fun_model, fun_model_args):
         fun_model (*function(...) return (weights,loss)): Function that computes a model.
         fun_model_args ([...]): Arguments list for fun_model (except y and tx).
     Returns:
-        float: Average of all test errors.
         D x 1 vector: Average of all weights.
+        float: Average of all prediction errors.
     """
 
     # k must be positive
