@@ -3,16 +3,17 @@
 
 import numpy as np
 import implementations
+import proj1_helpers
 
-def k_fold_cross_validation(k, y, tx, fun_make_model, fun_make_model_args):
+def k_fold_cross_validation(y, tx, k, fun_model, fun_model_args):
     """Performs cross validation on the dataset.
 
     Args:
-        k (int): Number of folds used for cross validation.
         y (N x 1 vector): Labels vector.
         tx (N x D matrix): Features matrix (already pre-processed).
-        fun_make_model (*function(...) return (weights,loss)): Function that computes a model.
-        fun_make_model_args ([...]): Arguments list for fun_make_model (except y and tx).
+        k (int): Number of folds used for cross validation.
+        fun_model (*function(...) return (weights,loss)): Function that computes a model.
+        fun_model_args ([...]): Arguments list for fun_model (except y and tx).
     Returns:
         float: Average of all test errors.
         D x 1 vector: Average of all weights.
@@ -26,7 +27,7 @@ def k_fold_cross_validation(k, y, tx, fun_make_model, fun_make_model_args):
     data_size = tx.shape[0]
 
     # Accumulators
-    acc_test_error = 0.
+    acc_pred_error = 0.0
     acc_weights = np.zeros( (tx.shape[1], k) )
 
     # Create random partioning of data
@@ -41,20 +42,39 @@ def k_fold_cross_validation(k, y, tx, fun_make_model, fun_make_model_args):
         y_test = y[ shuffle_indices[start_index:end_index] ]
         tx_test = tx[ shuffle_indices[start_index:end_index] ]
 
-        # Training data for this iteration
-        indices_training = np.concatenate( (shuffle_indices[:start_index], shuffle_indices[end_index:]) , axis=0)
-        tx_training = tx[ indices_training ]
-        y_training = y[ indices_training ]
+        # train data for this iteration
+        indices_train = np.concatenate( (shuffle_indices[:start_index], shuffle_indices[end_index:]) , axis=0)
+        tx_train = tx[ indices_train ]
+        y_train = y[ indices_train ]
 
         # Compute our model
-        weights, _ = fun_make_model(y_training, tx_training, fun_make_model_args)
+        weights, _ = fun_model(y_train, tx_train, *fun_model_args)
 
-        # Compute the test error
-        e = y_test - tx_test.dot(weights)
-        test_error = implementations.compute_mse(e)
+        # Compute the predictions score
+        pred_error = compute_predictions_score(y_test, weights, tx_test)
 
         # Accumulate the results
-        acc_test_error += test_error
+        acc_pred_error += pred_error
         acc_weights[:,i] = weights
 
-    return acc_test_error / k, acc_weights.sum(axis=1) / k
+    # Average the weights and test errors
+    avg_weights = acc_weights.sum(axis=1) / k
+    avg_pred_error = acc_pred_error / k
+
+    return avg_weights, avg_pred_error
+
+def compute_predictions_score(y_ref, weights, data):
+    """Computes the prediction score obtained by a weights vector.
+
+    Args:
+        y_ref (N x 1 vector): Reference labels vector.
+        weights (D x 1 matrix): Weights vector
+        data (N x D matrix): Features matrix (already pre-processed).
+    Returns:
+        float: the proportion of correctly predicted labels (between 0 and 1)
+    """
+    y_pred = proj1_helpers.predict_labels(weights, data)
+    return float(np.sum(y_pred == y_ref)) / float(y_ref.shape[0])
+
+
+
