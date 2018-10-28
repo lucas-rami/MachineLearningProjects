@@ -7,9 +7,9 @@ import implementations as imp
 # Load training data
 y_train, tx_train, _ = helper.load_csv_data('../all/train.csv')
 
-degrees = [1, 2, 3, 5]
-lambdas = [0.001, 0.01, 0.1, 1]
-k_cross_val = [5, 10]
+degrees = [1, 2, 3, 4, 5, 6]
+lambdas = np.logspace(-6, 0, 13)
+k_cross_val = [6]
 
 # Best results
 best_preds = np.ones( (y_train.shape[0] , 1) )
@@ -31,12 +31,12 @@ for degree in degrees: # For each degree...
     processed_tx_train = preprocess.build_poly(tx_train, degree)[:,1:]
     for lambda_ in lambdas: # For each lambda...
         for k in k_cross_val: # For each k...
-            
+
             print("Trying (degree, lambda, k) = (" + str(degree) + ", " + str(lambda_) + ", " + str(k) + ")")
 
-            # Use the multi_models_splitter function to compute our model 
+            # Use the multi_models_splitter function to compute our model
             y_pred, pred_score, cat_values, weights = multi.multi_models_splitter(y_train, processed_tx_train, 22, k, imp.ridge_regression, [lambda_])
-            
+
             print("Got score = " + str(pred_score))
 
             if pred_score > best_pred_score:
@@ -61,9 +61,9 @@ _, tx_test, ids = helper.load_csv_data('../all/test.csv')
 preprocess.outliers_to_mean(tx_test)
 processed_tx_test = preprocess.build_poly(tx_test, best_degree)[:,1:]
 
-# Use the multi_models_splitter function to compute our model 
-y_pred_test = multi.make_predictions_from_weights(processed_tx_test, 22, best_weights, best_cat_values) 
+# Use the multi_models_splitter function to compute our model
+y_pred_test = multi.make_predictions_from_weights(processed_tx_test, 22, best_weights, best_cat_values)
 
 # Save the predictions
 filename = 'results/integration0.csv'
-helper.create_csv_submission(ids, y_pred, filename)
+helper.create_csv_submission(ids, y_pred_test, filename)
