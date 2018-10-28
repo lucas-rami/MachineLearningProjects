@@ -18,7 +18,7 @@ def multi_models_splitter(y, tx, feature_column_index, k, fun_model, fun_model_a
         fun_model_args ([...]): Arguments list for fun_model (except y and tx).
     Returns:
         D x 1 vector: Predictions vector.
-        float: Average of all prediction errors.
+        float: Average of all predictions score.
         1 x F array: Array of categorization values.
         D x F matrix: Array of weights vector (one per categorizer value).
     """
@@ -38,7 +38,7 @@ def multi_models_splitter(y, tx, feature_column_index, k, fun_model, fun_model_a
     y_pred = np.zeros(data_size)
 
     # Accumulators
-    acc_weighted_pred_error = 0.0
+    acc_weighted_pred_score = 0.0
     acc_weights = np.zeros( (tx.shape[1], num_models) )
 
     for i in range(0,num_models):
@@ -49,10 +49,10 @@ def multi_models_splitter(y, tx, feature_column_index, k, fun_model, fun_model_a
         tx_categorized = tx[idx_categorized]
         
         # Run cross-validation on the model
-        avg_weights, avg_pred_error = k_fold_cross_validation(y_categorized, tx_categorized, k, fun_model, fun_model_args)
+        avg_weights, avg_pred_score = k_fold_cross_validation(y_categorized, tx_categorized, k, fun_model, fun_model_args)
 
         # Update accumulators
-        acc_weighted_pred_error += avg_pred_error * (tx_categorized.shape[0] / data_size)
+        acc_weighted_pred_score += avg_pred_score * (tx_categorized.shape[0] / data_size)
         acc_weights[:,i] = np.copy(avg_weights)
 
         # Get predictions 
@@ -61,7 +61,7 @@ def multi_models_splitter(y, tx, feature_column_index, k, fun_model, fun_model_a
         # Get predictions back in correct order
         y_pred[idx_categorized] = y_pred_categorized
 
-    return y_pred, acc_weighted_pred_error, categorization_values, acc_weights
+    return y_pred, acc_weighted_pred_score, categorization_values, acc_weights
 
 
 def make_predictions_from_weights(tx, feature_column_index, weights, cat_values):

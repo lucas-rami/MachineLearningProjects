@@ -16,7 +16,7 @@ def k_fold_cross_validation(y, tx, k, fun_model, fun_model_args):
         fun_model_args ([...]): Arguments list for fun_model (except y and tx).
     Returns:
         D x 1 vector: Average of all weights.
-        float: Average of all prediction errors.
+        float: Average of all predictions score.
     """
 
     # k must be positive
@@ -27,7 +27,7 @@ def k_fold_cross_validation(y, tx, k, fun_model, fun_model_args):
     data_size = tx.shape[0]
 
     # Accumulators
-    acc_pred_error = 0.0
+    acc_pred_score = 0.0
     acc_weights = np.zeros( (tx.shape[1], k) )
 
     # Create random partioning of data
@@ -51,17 +51,17 @@ def k_fold_cross_validation(y, tx, k, fun_model, fun_model_args):
         weights, _ = fun_model(y_train, tx_train, *fun_model_args)
 
         # Compute the predictions score
-        pred_error = compute_predictions_score(y_test, weights, tx_test)
+        pred_score = compute_predictions_score(y_test, weights, tx_test)
 
         # Accumulate the results
-        acc_pred_error += pred_error
+        acc_pred_score += pred_score
         acc_weights[:,i] = weights
 
     # Average the weights and test errors
     avg_weights = acc_weights.sum(axis=1) / k
-    avg_pred_error = acc_pred_error / k
+    acc_pred_score /= k
 
-    return avg_weights, avg_pred_error
+    return avg_weights, acc_pred_score
 
 def compute_predictions_score(y_ref, weights, data):
     """Computes the prediction score obtained by a weights vector.
