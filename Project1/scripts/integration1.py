@@ -3,20 +3,22 @@ import proj1_helpers as helper
 import data_preprocessing as preprocess
 import multi_models_splitter as multi
 import implementations as imp
+import cross_validation as cross
 import os 
 
 # Load training data
 y_train, tx_train, _ = helper.load_csv_data('../all/train.csv')
 
 degrees = [1, 2, 3]
-lambdas = [0.001, 0.01, 0.1, 1]
-k_cross_val = [5]
+lambdas = [0.1, 1]
+k_cross_val = [5, 10]
 
 # degrees = [1]
 # lambdas = [0.1]
 # k_cross_val = [5]
 
 # Best results
+best_preds = np.ones( (y_train.shape[0] , 1) )
 best_pred_score = 0.0
 best_weights = 0
 best_cat_values = 0
@@ -39,15 +41,14 @@ for degree in degrees: # For each degree...
             print("Trying (degree, lambda, k) = (" + str(degree) + ", " + str(lambda_) + ", " + str(k) + ")")
 
             # Use the multi_models_splitter function to compute our model 
-            y_pred, pred_score, cat_values, weights = multi.multi_models_splitter(y_train, processed_tx_train, 22, k, imp.ridge_regression, [lambda_])
+            weigths, pred_score, = cross.k_fold_cross_validation(y_train, processed_tx_train, k, 4, imp.ridge_regression, [lambda_])
             
             print("Got score = " + str(pred_score))
 
             if pred_score > best_pred_score:
                 # Update best rsults
                 best_pred_score = pred_score
-                best_weights = np.copy(weights)
-                best_cat_values = np.copy(cat_values)
+                best_weights = np.copy(weigths)
 
                 # Update best parameters
                 best_degree = degree
@@ -65,9 +66,9 @@ preprocess.outliers_to_mean(tx_test)
 processed_tx_test = preprocess.build_poly(tx_test, best_degree)[:,1:]
 
 # Use the multi_models_splitter function to compute our model 
-y_pred_test = multi.make_predictions_from_weights(processed_tx_test, 22, best_weights, best_cat_values) 
+y_pred_test = helper.predict_labels(best_weights, processed_tx_test)
 
 # Save the predictions
 program_path = os.path.dirname(os.path.realpath(__file__))
-filename = program_path + '\\results\\integration0_noover.csv'
+filename = program_path + '\\results\\integration1_over.csv'
 helper.create_csv_submission(ids, y_pred_test, filename)
