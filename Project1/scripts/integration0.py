@@ -8,19 +8,12 @@ import os
 # Load training data
 y_train, tx_train, _ = helper.load_csv_data('../all/train.csv')
 
-<<<<<<< HEAD
-degrees = [1, 2, 3]
-lambdas = [0.001, 0.01, 0.1, 1]
-k_cross_val = [5]
+# Seed the random number generator with a fixed value for consistent results
+np.random.seed(20181028)
 
-# degrees = [1]
-# lambdas = [0.1]
-# k_cross_val = [5]
-=======
-degrees = [1, 2, 3, 4, 5, 6]
+degrees = [1, 3, 5, 6]
 lambdas = np.logspace(-6, 0, 13)
 k_cross_val = [6]
->>>>>>> 7579c958a1e9903458c109b9bbfa58d922235a71
 
 # Best results
 best_pred_score = 0.0
@@ -50,7 +43,7 @@ for degree in degrees: # For each degree...
             print("Got score = " + str(pred_score))
 
             if pred_score > best_pred_score:
-                # Update best rsults
+                # Update best results
                 best_pred_score = pred_score
                 best_weights = np.copy(weights)
                 best_cat_values = np.copy(cat_values)
@@ -75,5 +68,5 @@ y_pred_test = multi.make_predictions_from_weights(processed_tx_test, 22, best_we
 
 # Save the predictions
 program_path = os.path.dirname(os.path.realpath(__file__))
-filename = program_path + '\\results\\integration0_noover.csv'
+filename = program_path + '\\results\\integration0.csv'
 helper.create_csv_submission(ids, y_pred_test, filename)
