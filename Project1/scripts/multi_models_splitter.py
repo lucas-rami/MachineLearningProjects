@@ -49,7 +49,7 @@ def multi_models_splitter(y, tx, feature_column_index, k, fun_model, fun_model_a
         tx_categorized = tx[idx_categorized]
         
         # Run cross-validation on the model
-        avg_weights, avg_pred_score = k_fold_cross_validation(y_categorized, tx_categorized, k, 4, fun_model, fun_model_args)
+        avg_weights, avg_pred_score = k_fold_cross_validation(y_categorized, tx_categorized, k, fun_model, fun_model_args)
 
         # Update accumulators
         acc_weighted_pred_score += avg_pred_score * (tx_categorized.shape[0] / data_size)
