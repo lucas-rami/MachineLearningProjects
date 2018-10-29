@@ -53,7 +53,7 @@ def outliers_to_mean(tx_train, tx_test):
         tx_train[:,i][tx_train[:,i] == -999] = feature_mean_train
         tx_test[:,i][tx_test[:,i] == -999] = feature_mean_train
 
-def normalize_features(tx):
+def normalize_features(tx_train, tx_test):
     """Pre-processes the data by normalizing each feature so
     that they each have mean 0 and standard deviation 1. Also
     replaces outlier values (-999) with 0.
@@ -63,8 +63,12 @@ def normalize_features(tx):
     Returns:
         nothing.
     """
-    for i in range(0,tx.shape[1]):
-        feature_mean = tx[:,i][tx[:,i] != -999].mean()
-        tx[:,i][tx[:,i] != -999] = tx[:,i][tx[:,i] != -999] - feature_mean
-        tx[:,i][tx[:,i] == -999] = 0
-        tx[:,i] = tx[:,i]/np.std(tx[:,i])
+    for i in range(0,tx_train.shape[1]):
+        feature_mean = tx_train[:,i][tx_train[:,i] != -999].mean()
+        tx_train[:,i][tx_train[:,i] != -999] = tx_train[:,i][tx_train[:,i] != -999] - feature_mean
+        tx_train[:,i][tx_train[:,i] == -999] = 0
+        Dev = np.std(tx_train[:,i])
+        tx_train[:,i] = tx_train[:,i]/Dev
+        tx_test[:,i][tx_test[:,i] != -999] = tx_test[:,i][tx_test[:,i] != -999] - feature_mean
+        tx_test[:,i][tx_test[:,i] == -999] = 0
+        tx_test[:,i] = tx_test[:,i]/Dev
