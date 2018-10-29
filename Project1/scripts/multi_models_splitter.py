@@ -41,7 +41,7 @@ def multi_models_splitter(y, tx, feature_column_index, k, fun_model, fun_model_a
     acc_weighted_pred_score = 0.0
     acc_weights = np.zeros( (tx.shape[1], num_models) )
 
-    for i in range(0,num_models):
+    for i in range(num_models):
         
         # Only consider datapoints of one category
         idx_categorized = np.where( tx[:, feature_column_index] == categorization_values[i] )
@@ -52,7 +52,7 @@ def multi_models_splitter(y, tx, feature_column_index, k, fun_model, fun_model_a
         weights, avg_pred_score = k_fold_cross_validation(y_categorized, tx_categorized, k, fun_model, fun_model_args)
 
         # Update accumulators
-        acc_weighted_pred_score += avg_pred_score * (tx_categorized.shape[0] / data_size)
+        acc_weighted_pred_score += avg_pred_score * (float(tx_categorized.shape[0]) / float(data_size))
         acc_weights[:,i] = np.copy(weights)
 
         # Get predictions 
