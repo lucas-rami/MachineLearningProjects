@@ -17,7 +17,7 @@ _,tx_test,ids = helper.load_csv_data('../all/test.csv')
 np.random.seed(20181029)
 
 # Parameters
-degrees = [1, 3, 5, 6, 8]
+degrees = [3, 5, 6, 8, 10, 12]
 lambdas = np.logspace(-9, 0, 10)
 k_cross_val = [5]
 
@@ -79,3 +79,9 @@ for i in range(NB_MODELS):
 program_path = os.path.dirname(os.path.realpath(__file__))
 filename = program_path + '/results/run_experimental.csv'
 helper.create_csv_submission(ids, y_pred, filename)
+
+# Best prediction score on training data is 0.8278255925832586
+# Best parameters for category 1 are (degree, lambda, k) = (12, 0.0001, 5)
+# Best parameters for category 2 are (degree, lambda, k) = (12, 1e-06, 5)
+# Best parameters for category 3 are (degree, lambda, k) = (12, 0.001, 5)
+# Best parameters for category 4 are (degree, lambda, k) = (10, 1e-07, 5

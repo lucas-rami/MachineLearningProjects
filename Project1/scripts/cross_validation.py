@@ -32,7 +32,6 @@ def k_fold_cross_validation(y, tx, k, fun_model, fun_model_args=[]):
 
     # Accumulators
     acc_pred_score = 0.0
-    #acc_weights = np.zeros( (tx.shape[1], k) )
 
     # Create random partioning of data
     shuffle_indices = np.random.permutation(np.arange(data_size))
@@ -59,10 +58,8 @@ def k_fold_cross_validation(y, tx, k, fun_model, fun_model_args=[]):
 
         # Accumulate the results
         acc_pred_score += pred_score
-        #acc_weights[:,i] = weights
 
     # Average the weights and test errors
-    #avg_weights = acc_weights.sum(axis=1) / k
     acc_pred_score /= k
 
     return weights_total, acc_pred_score
