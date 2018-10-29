@@ -3,7 +3,7 @@ import proj1_helpers as helper
 import data_preprocessing as preprocess
 import multi_models_splitter as multi
 import implementations as imp
-import os 
+import os
 
 # Load training data
 y_train, tx_train, _ = helper.load_csv_data('../all/train.csv')
@@ -27,8 +27,8 @@ best_k = 0
 
 print("Starting computations\n")
 
-# Remove outliers
-preprocess.outliers_to_mean(tx_train)
+# Normalizing data
+preprocess.normalize_features(tx_train)
 
 for degree in degrees: # For each degree...
     processed_tx_train = preprocess.build_poly(tx_train, degree)[:,1:]

@@ -4,14 +4,14 @@
 import numpy as np
 
 def build_poly(tx, degree):
-    """Pre-processes the data by polynomial expansion. 
-    
+    """Pre-processes the data by polynomial expansion.
+
     Args:
         tx (N x D matrix): Features matrix (not pre-processed).
         degree (int): Expansion degree.
     Returns:
         (N x (1 + (D * degree)) matrix): Extended features matrix.
-    """    
+    """
     poly = np.ones((len(tx), 1))
     for deg in range(1, degree+1):
         poly = np.c_[poly, np.power(tx, deg)]
@@ -19,8 +19,8 @@ def build_poly(tx, degree):
 
 def build_poly_diff_degrees(tx, degrees):
     """Pre-processes the data by polynomial expansion, with a different
-    degree for each feature. 
-    
+    degree for each feature.
+
     Args:
         tx (N x D matrix): Features matrix (not pre-processed).
         degrees (int): Expansion degree for each feature.
@@ -34,13 +34,13 @@ def build_poly_diff_degrees(tx, degrees):
     for ind, degree in enumerate(degrees):
         poly = build_poly(tx[:, ind], int(degree))
         poly_diff = np.append(poly_diff, poly[:, 1:], axis=1)
-    
+
     return poly_diff
 
 def outliers_to_mean(tx):
     """Pre-processes the data by replacing outliers value (-999) with
-    mean of corresponding feature. 
-    
+    mean of corresponding feature.
+
     Args:
         tx (N x D matrix): Features matrix (not pre-processed).
     Returns:
@@ -53,12 +53,18 @@ def outliers_to_mean(tx):
         # Replace outliers value with mean
         tx[:,i][tx[:,i] == -999] = feature_mean
 
-def normalize_featues(tx):
+def normalize_features(tx):
     """Pre-processes the data by normalizing each feature so
-    that they each have mean 0 and standard deviation 1. 
-    
+    that they each have mean 0 and standard deviation 1. Also
+    replaces outlier values (-999) with 0.
+
     Args:
         tx (N x D matrix): Features matrix.
     Returns:
-        nothing
+        nothing.
     """
+    for i in range(0,tx.shape[1]):
+        feature_mean = tx[:,i][tx[:,i] != -999].mean()
+        tx[:,i][tx[:,i] != -999] = tx[:,i][tx[:,i] != -999] - feature_mean
+        tx[:,i][tx[:,i] == -999] = 0
+        tx[:,i] = tx[:,i]/np.std(tx[:,i])
