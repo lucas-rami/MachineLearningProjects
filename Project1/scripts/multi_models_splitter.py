@@ -3,9 +3,9 @@
 
 import numpy as np
 from proj1_helpers import predict_labels
-from cross_validation import k_fold_cross_validation
+from cross_validation import *
 
-def multi_models_splitter(y_train, tx_train, tx_test, feature_column_index, k, fun_model, fun_model_args):
+def multi_models_splitter(y_train, tx_train, tx_test, feature_column_index, k, fun_model, fun_model_args, fiveSeeds=False):
     """Creates a predictions vector by creating different models based on the value
     of a categorizing feature in the dataset.
 
@@ -40,19 +40,24 @@ def multi_models_splitter(y_train, tx_train, tx_test, feature_column_index, k, f
     acc_weighted_pred_score = 0.0
 
     for i in range(num_models):
-        
+
         # Only consider datapoints of one category
         idx_categorized = np.where( tx_train[:, feature_column_index] == categorization_values[i] )
         y_categorized = y_train[idx_categorized]
         tx_categorized = tx_train[idx_categorized]
-        
-        # Run cross-validation on the model
-        weights, avg_pred_score = k_fold_cross_validation(y_categorized, tx_categorized, k, fun_model, fun_model_args)
+
+        if fiveSeeds:
+            # Run cross-validation on the model
+            weights, avg_pred_score = k_fold_cross_validation_5_seeds(y_categorized, tx_categorized, k, fun_model, fun_model_args)
+
+        else:
+            # Run cross-validation on the model
+            weights, avg_pred_score = k_fold_cross_validation(y_categorized, tx_categorized, k, fun_model, fun_model_args)
 
         # Update accumulators
         acc_weighted_pred_score += avg_pred_score * (float(tx_categorized.shape[0]) / float(data_size))
 
-        # Get predictions 
+        # Get predictions
         idx_categorized_test = np.where( tx_test[:, feature_column_index] == categorization_values[i] )
         tx_categorized_test = tx_test[idx_categorized_test]
         y_pred_categorized = predict_labels(weights, tx_categorized_test)
@@ -93,16 +98,16 @@ def multi_models_splitter_experimental(y_train, tx_train, tx_test, feature_colum
     pred_scores_array = []
 
     for i in range(num_models):
-        
+
         # Only consider datapoints of one category
         idx_categorized = np.where( tx_train[:, feature_column_index] == categorization_values[i] )
         y_categorized = y_train[idx_categorized]
         tx_categorized = tx_train[idx_categorized]
-        
+
         # Run cross-validation on the model
         weights, avg_pred_score = k_fold_cross_validation(y_categorized, tx_categorized, k, fun_model, fun_model_args)
 
-        # Get predictions 
+        # Get predictions
         idx_categorized_test = np.where( tx_test[:, feature_column_index] == categorization_values[i] )
         tx_categorized_test = tx_test[idx_categorized_test]
         y_pred_categorized = predict_labels(weights, tx_categorized_test)

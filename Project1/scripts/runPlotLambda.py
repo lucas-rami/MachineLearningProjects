@@ -20,10 +20,10 @@ print("Done!")
 np.random.seed(20181028)
 
 # Parameters
-degrees = list(range(10, 15))
-lambdas = np.logspace(-9, 0, 10)
+degrees = list(range(11, 12))
+lambdas = np.logspace(-9, 0, 19)
 k_cross_val = [5]
-score = [0]*len(degrees)
+score = [0]*len(lambdas)
 
 # Best results
 best_pred_score = 0.0
@@ -42,8 +42,7 @@ print("Starting computations\n")
 for ind_degree, degree in enumerate(degrees): # For each degree...
     processed_tx_train = preprocess.build_poly(tx_train, degree)
     processed_tx_test = preprocess.build_poly(tx_test, degree)
-    best_pred_score_lambda = 0.0
-    for lambda_ in lambdas: # For each lambda...
+    for ind_lambda, lambda_ in enumerate(lambdas): # For each lambda...
         for k in k_cross_val: # For each k...
 
             print("Trying (degree, lambda, k) = (" + str(degree) + ", " + str(lambda_) + ", " + str(k) + ")")
@@ -52,10 +51,6 @@ for ind_degree, degree in enumerate(degrees): # For each degree...
             y_pred, pred_score = multi.multi_models_splitter(y_train, processed_tx_train, processed_tx_test, 23, k, imp.ridge_regression, [lambda_])
 
             print("Got predictions score = " + str(pred_score) + "\n")
-
-            if pred_score > best_pred_score_lambda:
-                # Update best results
-                best_pred_score_lambda = pred_score
 
             if pred_score > best_pred_score:
                 # Update best results
@@ -66,13 +61,13 @@ for ind_degree, degree in enumerate(degrees): # For each degree...
                 best_degree = degree
                 best_lambda = lambda_
                 best_k = k
-    score[ind_degree] = best_pred_score_lambda
+            score[ind_lambda] = pred_score
 
 # Saving results as a text file
-np.savetxt('degree_score.out', (score, degrees))
+np.savetxt('lambda_score.out', (score, lambdas))
 
 # Generating plot
-vis.cross_validation_visualization_degree(degrees, score)
+vis.cross_validation_visualization_lambda(lambdas, score)
 
 print("Best prediction score on training data is " + str(best_pred_score))
 print("Best parameters are (degree, lambda, k) = (" + str(best_degree) + ", " + str(best_lambda) + ", " + str(best_k) + ")")

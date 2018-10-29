@@ -15,8 +15,8 @@ _,tx_test,ids = helper.load_csv_data('../all/test.csv')
 np.random.seed(20181028)
 
 # Parameters
-degrees = list(range(10, 15))
-lambdas = np.logspace(-9, 0, 10)
+degrees = list(range(11, 12))
+lambdas = np.logspace(-4.5, -4.5, 1)
 k_cross_val = [5]
 
 # Best results
@@ -64,5 +64,5 @@ program_path = os.path.dirname(os.path.realpath(__file__))
 filename = program_path + '/results/run.csv'
 helper.create_csv_submission(ids, best_pred, filename)
 
-# Best prediction score on training data is 0.8264494882317764
-# Best parameters are (degree, lambda, k) = (12, 0.0001, 5)
+#Best prediction score on training data is 0.8268414758357583
+#Best parameters are (degree, lambda, k) = (11, 3.1622776601683795e-05, 5)
