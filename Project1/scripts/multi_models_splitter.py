@@ -111,10 +111,11 @@ def multi_models_splitter_complete(y_train, tx_train, tx_test, feature_column_in
         acc_weighted_pred_score += avg_pred_score * (float(tx_categorized.shape[0]) / float(data_size))
 
         # Get predictions 
-        y_pred_categorized = predict_labels(weights, tx_test)
+        idx_categorized_test = np.where( tx_test[:, feature_column_index] == categorization_values[i] )
+        tx_categorized_test = tx_test[idx_categorized_test]
+        y_pred_categorized = predict_labels(weights, tx_categorized_test)
 
         # Get predictions back in correct order
-        idx_categorized_test = np.where( tx_test[:, feature_column_index] == categorization_values[i] )
         y_pred[idx_categorized_test] = y_pred_categorized
 
     return y_pred, acc_weighted_pred_score

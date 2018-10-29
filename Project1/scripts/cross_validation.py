@@ -15,7 +15,7 @@ def k_fold_cross_validation(y, tx, k, fun_model, fun_model_args=[]):
         fun_model (*function(...) return (weights,loss)): Function that computes a model.
         fun_model_args ([...]): Arguments list for fun_model (except y and tx).
     Returns:
-        D x 1 vector: Average of all weights.
+        D x 1 vector: Weights vector on entire dataset.
         float: Average of all predictions score.
     """
 
@@ -25,19 +25,24 @@ def k_fold_cross_validation(y, tx, k, fun_model, fun_model_args=[]):
 
     # Number of datapoints
     data_size = tx.shape[0]
-    weights, _ = fun_model(y, tx, *fun_model_args) 
+    batch_size = int(data_size / k)
+
+    # Compute weights on whole dataset
+    weights_total, _ = fun_model(y, tx, *fun_model_args) 
 
     # Accumulators
     acc_pred_score = 0.0
-    acc_weights = np.zeros( (tx.shape[1], k) )
+    #acc_weights = np.zeros( (tx.shape[1], k) )
 
     # Create random partioning of data
     shuffle_indices = np.random.permutation(np.arange(data_size))
 
     for i in range(k):
 
-        start_index = i * k
-        end_index = min((i + 1) * k, data_size)
+        start_index = i * batch_size
+        end_index = min( (i + 1) * batch_size, data_size)
+        print("start:end " + str(start_index) + ":" + str(end_index))
+        print("data_size:batch_size " + str(data_size) + ":" + str(batch_size))
 
         # Test data for this iteration
         y_test = y[ shuffle_indices[start_index:end_index] ]
@@ -56,15 +61,13 @@ def k_fold_cross_validation(y, tx, k, fun_model, fun_model_args=[]):
 
         # Accumulate the results
         acc_pred_score += pred_score
-        acc_weights[:,i] = weights
+        #acc_weights[:,i] = weights
 
     # Average the weights and test errors
-    avg_weights = acc_weights.sum(axis=1) / k
+    #avg_weights = acc_weights.sum(axis=1) / k
     acc_pred_score /= k
 
-
-
-    return avg_weights, acc_pred_score
+    return weights_total, acc_pred_score
 
 def compute_predictions_score(y_ref, weights, data):
     """Computes the prediction score obtained by a weights vector.

@@ -3,52 +3,54 @@ import proj1_helpers as helper
 import data_preprocessing as preprocess
 import multi_models_splitter as multi
 import implementations as imp
-import cross_validation as cross
-import os 
+import os
 
 # Load training data
 y_train, tx_train, _ = helper.load_csv_data('../all/train.csv')
 
-degrees = [1, 2, 3]
-lambdas = [0.1, 1]
-k_cross_val = [5, 10]
+# Load test data
+_, tx_test, ids = helper.load_csv_data('../all/test.csv')
 
-# degrees = [1]
-# lambdas = [0.1]
-# k_cross_val = [5]
+# Seed the random number generator with a fixed value for consistent results
+np.random.seed(20181028)
+
+# Parameters
+degrees = [6]
+lambdas = [10e-8]  #np.logspace(-6, 0, 13)
+k_cross_val = [5]
 
 # Best results
-best_preds = np.ones( (y_train.shape[0] , 1) )
 best_pred_score = 0.0
-best_weights = 0
-best_cat_values = 0
+best_pred = np.array( (tx_test.shape[0], 1) )
 
 # Best parameters
 best_degree = 0
 best_lambda = 0.0
 best_k = 0
 
+# Normalizing data
+preprocess.outliers_to_mean(tx_train)
+preprocess.outliers_to_mean(tx_test)
+
 print("Starting computations\n")
 
-# Remove outliers
-preprocess.outliers_to_mean(tx_train)
-
 for degree in degrees: # For each degree...
-    processed_tx_train = preprocess.build_poly(tx_train, degree)[:,1:]
+    processed_tx_train = preprocess.build_poly(tx_train, degree)
+    processed_tx_test = preprocess.build_poly(tx_test, degree)
     for lambda_ in lambdas: # For each lambda...
         for k in k_cross_val: # For each k...
-            
+
             print("Trying (degree, lambda, k) = (" + str(degree) + ", " + str(lambda_) + ", " + str(k) + ")")
 
-            # Use the multi_models_splitter function to compute our model 
-            weigths, pred_score, = cross.k_fold_cross_validation(y_train, processed_tx_train, k, 4, imp.ridge_regression, [lambda_])
-            
+            # Use the multi_models_splitter function to compute our model
+            y_pred, pred_score = multi.multi_models_splitter_complete(y_train, processed_tx_train, processed_tx_test, 23, k, imp.ridge_regression, [lambda_])
+
             print("Got score = " + str(pred_score))
 
             if pred_score > best_pred_score:
-                # Update best rsults
+                # Update best results
                 best_pred_score = pred_score
-                best_weights = np.copy(weigths)
+                best_pred = np.copy(y_pred)
 
                 # Update best parameters
                 best_degree = degree
@@ -58,17 +60,7 @@ for degree in degrees: # For each degree...
 print("Best prediction score on training data is " + str(best_pred_score))
 print("Best parameters are (degree, lambda, k) = (" + str(best_degree) + ", " + str(best_lambda) + ", " + str(best_k) + ")")
 
-# Load test data
-_, tx_test, ids = helper.load_csv_data('../all/test.csv')
-
-# Remove outliers and do pre-processing
-preprocess.outliers_to_mean(tx_test)
-processed_tx_test = preprocess.build_poly(tx_test, best_degree)[:,1:]
-
-# Use the multi_models_splitter function to compute our model 
-y_pred_test = helper.predict_labels(best_weights, processed_tx_test)
-
 # Save the predictions
 program_path = os.path.dirname(os.path.realpath(__file__))
-filename = program_path + '\\results\\integration1_over.csv'
-helper.create_csv_submission(ids, y_pred_test, filename)
+filename = program_path + '/results/integration1_phil.csv'
+helper.create_csv_submission(ids, best_pred, filename)
