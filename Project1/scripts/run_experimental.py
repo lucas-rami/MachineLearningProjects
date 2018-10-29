@@ -15,7 +15,7 @@ _,tx_test,ids = helper.load_csv_data('../all/test.csv')
 np.random.seed(20181028)
 
 # Parameters
-degrees = [5, 6, 8, 10, 12]
+degrees = [3, 5, 6, 8, 10]
 lambdas = np.logspace(-9, 0, 10)
 k_cross_val = [5]
 
@@ -42,7 +42,7 @@ for degree in degrees: # For each degree...
             print("Trying (degree, lambda, k) = (" + str(degree) + ", " + str(lambda_) + ", " + str(k) + ")")
 
             # Use the multi_models_splitter function to compute our model
-            y_pred, pred_score = multi.multi_models_splitter(y_train, processed_tx_train, processed_tx_test, 23, k, imp.ridge_regression, [lambda_])
+            y_pred, pred_score = multi.multi_models_splitter_complete(y_train, processed_tx_train, processed_tx_test, 23, k, imp.ridge_regression, [lambda_])
 
             print("Got predictions score = " + str(pred_score) + "\n")
 
