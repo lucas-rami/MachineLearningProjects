@@ -45,7 +45,7 @@ for degree in degrees: # For each degree...
             # Use the multi_models_splitter function to compute our model
             y_pred, pred_score = multi.multi_models_splitter_complete(y_train, processed_tx_train, processed_tx_test, 23, k, imp.ridge_regression, [lambda_])
 
-            print("Got score = " + str(pred_score))
+            print("Got prediction score = " + str(pred_score) + "\n")
 
             if pred_score > best_pred_score:
                 # Update best results

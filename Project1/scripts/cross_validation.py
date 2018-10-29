@@ -41,9 +41,7 @@ def k_fold_cross_validation(y, tx, k, fun_model, fun_model_args=[]):
 
         start_index = i * batch_size
         end_index = min( (i + 1) * batch_size, data_size)
-        print("start:end " + str(start_index) + ":" + str(end_index))
-        print("data_size:batch_size " + str(data_size) + ":" + str(batch_size))
-
+    
         # Test data for this iteration
         y_test = y[ shuffle_indices[start_index:end_index] ]
         tx_test = tx[ shuffle_indices[start_index:end_index] ]
