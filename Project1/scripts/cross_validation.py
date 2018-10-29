@@ -25,6 +25,7 @@ def k_fold_cross_validation(y, tx, k, fun_model, fun_model_args=[]):
 
     # Number of datapoints
     data_size = tx.shape[0]
+    weights, _ = fun_model(y, tx, *fun_model_args) 
 
     # Accumulators
     acc_pred_score = 0.0
@@ -60,6 +61,8 @@ def k_fold_cross_validation(y, tx, k, fun_model, fun_model_args=[]):
     # Average the weights and test errors
     avg_weights = acc_weights.sum(axis=1) / k
     acc_pred_score /= k
+
+
 
     return avg_weights, acc_pred_score
 

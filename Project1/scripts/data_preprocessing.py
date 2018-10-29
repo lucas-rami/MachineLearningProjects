@@ -52,3 +52,13 @@ def outliers_to_mean(tx):
         feature_mean = tx[:,i][np.where(tx[:,i] != -999)].mean()
         # Replace outliers value with mean
         tx[:,i][tx[:,i] == -999] = feature_mean
+
+def normalize_featues(tx):
+    """Pre-processes the data by normalizing each feature so
+    that they each have mean 0 and standard deviation 1. 
+    
+    Args:
+        tx (N x D matrix): Features matrix.
+    Returns:
+        nothing
+    """

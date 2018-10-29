@@ -11,9 +11,9 @@ y_train, tx_train, _ = helper.load_csv_data('../all/train.csv')
 # Seed the random number generator with a fixed value for consistent results
 np.random.seed(20181028)
 
-degrees = [1, 3, 5, 6]
+degrees = [1, 2, 3, 4, 5, 6, 7, 8]
 lambdas = np.logspace(-6, 0, 13)
-k_cross_val = [6]
+k_cross_val = [3, 5, 7]
 
 # Best results
 best_pred_score = 0.0
@@ -68,5 +68,5 @@ y_pred_test = multi.make_predictions_from_weights(processed_tx_test, 22, best_we
 
 # Save the predictions
 program_path = os.path.dirname(os.path.realpath(__file__))
-filename = program_path + '\\results\\integration0.csv'
+filename = program_path + '\\results\\integration0_nonbias_higher_poly.csv'
 helper.create_csv_submission(ids, y_pred_test, filename)

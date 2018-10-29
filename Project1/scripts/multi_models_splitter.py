@@ -49,14 +49,14 @@ def multi_models_splitter(y, tx, feature_column_index, k, fun_model, fun_model_a
         tx_categorized = tx[idx_categorized]
         
         # Run cross-validation on the model
-        avg_weights, avg_pred_score = k_fold_cross_validation(y_categorized, tx_categorized, k, fun_model, fun_model_args)
+        weights, avg_pred_score = k_fold_cross_validation(y_categorized, tx_categorized, k, fun_model, fun_model_args)
 
         # Update accumulators
         acc_weighted_pred_score += avg_pred_score * (tx_categorized.shape[0] / data_size)
-        acc_weights[:,i] = np.copy(avg_weights)
+        acc_weights[:,i] = np.copy(weights)
 
         # Get predictions 
-        y_pred_categorized = predict_labels(avg_weights, tx_categorized)
+        y_pred_categorized = predict_labels(weights, tx_categorized)
 
         # Get predictions back in correct order
         y_pred[idx_categorized] = y_pred_categorized
