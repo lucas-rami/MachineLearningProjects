@@ -25,7 +25,7 @@ def cross_validation_visualization_lambda(lambdas, score):
 def cross_validation_visualization_k(k, score):
     """visualization of the curve of score as a function of
     lambda of ridge regression."""
-    plt.semilogx(k, score, marker=".", color='r')
+    plt.plot(k, score, marker=".", color='r')
     plt.xlabel("Number of folds in cross-validation")
     plt.ylabel("Average prediction score")
     plt.grid(True)
@@ -39,10 +39,10 @@ def visualization_two_features(y, tx, weights, ind):
     misses = np.where(y == -1)
     ax.scatter(
         tx[hits, ind[0]], tx[hits, ind[1]],
-        marker='.', color=[0.06, 0.06, 1], s=10)
+        marker='.', color=[0.06, 0.06, 1], s=5)
     ax.scatter(
         tx[misses, ind[0]], tx[misses, ind[1]],
-        marker='*', color=[1, 0.06, 0.06], s=10)
+        marker='*', color=[1, 0.06, 0.06], s=5)
     ax.set_xlabel("DER_deltar_tau_lep")
     ax.set_ylabel("PRI_lep_pt")
     ax.grid()

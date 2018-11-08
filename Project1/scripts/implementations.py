@@ -146,7 +146,7 @@ def logistic_regression(y, tx, initial_w, max_iters, gamma):
         loss = newLoss
         print("Iteration: " + str(iter) + " loss : "  + str(loss))
     return w, loss
-        
+
 def reg_logistic_regression(y, tx, lambda_, initial_w, max_iters, gamma):
     """Performs a regularized logistic regression using gradient descent"""
     loss = float('inf')
@@ -155,7 +155,7 @@ def reg_logistic_regression(y, tx, lambda_, initial_w, max_iters, gamma):
         # Compute the loss
         newLoss = calculate_loss_neg_log_likelihood(y, tx, w) + lambda_ * (w.T.dot(w)) / 2.0
         # Compute the gradient
-        grad = calculate_gradient_neg_log_likelihood(y, tx, w) + 2.0 * lambda_ * w
+        grad = calculate_gradient_neg_log_likelihood(y, tx, w) + lambda_ * w
         # Update the weights
         w = w - gamma*grad
         #if newLoss-loss < 1e-8:
