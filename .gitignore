@@ -118,3 +118,7 @@ Project1/scripts/results
 #Lucas' crap
 Project1/scripts/sandbox.ipynb
 Project1/.vscode/settings.json
+
+#Visual studio crap
+.vscode
+
