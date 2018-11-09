@@ -37,34 +37,23 @@ def build_poly_diff_degrees(tx, degrees):
 
     return poly_diff
 
-def outliers_to_mean(tx):
-    """Pre-processes the data by replacing outliers value (-999) with
-    mean of corresponding feature.
-
-    Args:
-        tx (N x D matrix): Features matrix (not pre-processed).
-    Returns:
-        nothing
-    """
-
-    for i in range(0,tx.shape[1]):
-        # Compute the mean for each column (removing outliers)
-        feature_mean = tx[:,i][np.where(tx[:,i] != -999)].mean()
-        # Replace outliers value with mean
-        tx[:,i][tx[:,i] == -999] = feature_mean
-
-def normalize_features(tx):
+def normalize_features(tx_train, tx_test):
     """Pre-processes the data by normalizing each feature so
     that they each have mean 0 and standard deviation 1. Also
     replaces outlier values (-999) with 0.
 
     Args:
-        tx (N x D matrix): Features matrix.
+        tx_train (N x D matrix): Training features matrix.
+        tx_test (N x D matrix): Test features matrix.
     Returns:
         nothing.
     """
-    for i in range(0,tx.shape[1]):
-        feature_mean = tx[:,i][tx[:,i] != -999].mean()
-        tx[:,i][tx[:,i] != -999] = tx[:,i][tx[:,i] != -999] - feature_mean
-        tx[:,i][tx[:,i] == -999] = 0
-        tx[:,i] = tx[:,i]/np.std(tx[:,i])
+    for i in range(0,tx_train.shape[1]):
+        feature_mean = tx_train[:,i][tx_train[:,i] != -999].mean()
+        tx_train[:,i][tx_train[:,i] != -999] = tx_train[:,i][tx_train[:,i] != -999] - feature_mean
+        tx_train[:,i][tx_train[:,i] == -999] = 0
+        dev = np.std(tx_train[:,i])
+        tx_train[:,i] = tx_train[:,i]/dev
+        tx_test[:,i][tx_test[:,i] != -999] = tx_test[:,i][tx_test[:,i] != -999] - feature_mean
+        tx_test[:,i][tx_test[:,i] == -999] = 0
+        tx_test[:,i] = tx_test[:,i]/dev

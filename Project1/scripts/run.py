@@ -1,109 +1,68 @@
-from implementations import *
-from proj1_helpers import *
-from manipulate_data import *
+import numpy as np
+import proj1_helpers as helper
+import data_preprocessing as preprocess
+import multi_models_splitter as multi
+import implementations as imp
+import os
 
-print("Loading training data...")
-y_tr,tx_tr,ids_tr = load_csv_data('../all/train.csv')
-print("Done!")
+# Load training data
+y_train,tx_train,ids_train = helper.load_csv_data('../all/train.csv')
 
-print("Loading test data...")
-_,tx_te,ids_te = load_csv_data('../all/test.csv')
-print("Done!")
+# Load test data
+_,tx_test,ids = helper.load_csv_data('../all/test.csv')
 
-# Linear model, least squares solution
+# Seed the random number generator with a fixed value for consistent results
+np.random.seed(20181028)
 
-print("Solving least squares...")
-weights,loss = least_squares(y_tr,tx_tr)
-y_pred = predict_labels(weights,tx_te)
-print("Done!")
+# Parameters
+degrees = list(range(11, 12))
+lambdas = np.logspace(-4.5, -4.5, 1)
+k_cross_val = [5]
 
-filename = 'results/least_squares_implementation.csv'
-create_csv_submission(ids_te,y_pred,filename)
+# Best results
+best_pred_score = 0.0
+best_pred = np.array( (tx_test.shape[0], 1) )
 
-print("CSV File saved as " + filename)
+# Best parameters
+best_degree = 0
+best_lambda = 0.0
+best_k = 0
 
-# Remove outliers
+# Normalizing data
+preprocess.normalize_features(tx_train, tx_test)
 
-print("Removing outlier data from input data...")
-tx_tr_noOut = tx_tr[np.invert(np.any(np.isin(tx_tr, -999), 1))]
-y_tr_noOut = y_tr[np.invert(np.any(np.isin(tx_tr, -999), 1))]
-print("Done!")
+print("Starting computations\n")
 
-print("Solving least squares without outliers...")
-weights_noOut,loss_noOut = least_squares(y_tr_noOut,tx_tr_noOut)
-y_pred_noOut = predict_labels(weights_noOut,tx_te)
-print("Done!")
+for degree in degrees: # For each degree...
+    processed_tx_train = preprocess.build_poly(tx_train, degree)
+    processed_tx_test = preprocess.build_poly(tx_test, degree)
+    for lambda_ in lambdas: # For each lambda...
+        for k in k_cross_val: # For each k...
 
-filename = 'results/least_squares_implementation_no_outliers.csv'
-create_csv_submission(ids_te,y_pred_noOut,filename)
+            print("Trying (degree, lambda, k) = (" + str(degree) + ", " + str(lambda_) + ", " + str(k) + ")")
 
-print("CSV File saved as " + filename)
+            # Use the multi_models_splitter function to compute our model
+            y_pred, pred_score = multi.multi_models_splitter(y_train, processed_tx_train, processed_tx_test, 23, k, imp.ridge_regression, [lambda_])
 
-# Remove outlier features
+            print("Got predictions score = " + str(pred_score) + "\n")
 
-print("Removing outlier features from input data...")
-tx_tr_noOutFeatures = tx_tr[:, np.invert(np.any(np.isin(tx_tr, -999), 0))]
-tx_te_noOutFeatures = tx_te[:, np.invert(np.any(np.isin(tx_tr, -999), 0))]
-print("Done!")
+            if pred_score > best_pred_score:
+                # Update best results
+                best_pred_score = pred_score
+                best_pred = y_pred
 
-print("Solving least squares without outlier features...")
-weights_noOutFeatures,loss_noOutFeatures = least_squares(y_tr,tx_tr_noOutFeatures)
-y_pred_noOutFeatures = predict_labels(weights_noOutFeatures,tx_te_noOutFeatures)
-print("Done!")
+                # Update best parameters
+                best_degree = degree
+                best_lambda = lambda_
+                best_k = k
 
-filename = 'results/least_squares_implementation_no_outlier_features.csv'
-create_csv_submission(ids_te,y_pred_noOut,filename)
+print("Best prediction score on training data is " + str(best_pred_score))
+print("Best parameters are (degree, lambda, k) = (" + str(best_degree) + ", " + str(best_lambda) + ", " + str(best_k) + ")")
 
-print("CSV File saved as " + filename)
+# Save the predictions
+program_path = os.path.dirname(os.path.realpath(__file__))
+filename = program_path + '/results/run.csv'
+helper.create_csv_submission(ids, best_pred, filename)
 
-# Quadratic model, least squares solution
-
-degree = 2
-
-print("Generating degree 2 polynomial of data...")
-tx_trSq = build_poly(tx_tr, degree)
-tx_teSq = build_poly(tx_te, degree)
-print("Done!")
-
-print("Solving least squares for degree 2 polynomial of data...")
-weightsSq,lossSq = least_squares(y_tr,tx_trSq)
-y_pred = predict_labels(weightsSq,tx_teSq)
-print("Done!")
-
-filename = 'results/least_squares_implementation_Degree_2.csv'
-create_csv_submission(ids_te,y_pred,filename)
-
-print("CSV File saved as " + filename)
-
-# Quadratic model, no outliers
-
-print("Generating degree 2 polynomial of data...")
-tx_trSq_noOut = build_poly(tx_tr_noOut, degree)
-print("Done!")
-
-print("Solving least squares for degree 2 polynomial of data...")
-weightsSq_noOut,lossSq_noOut = least_squares(y_tr_noOut,tx_trSq_noOut)
-y_predSq_noOut = predict_labels(weightsSq_noOut,tx_teSq)
-print("Done!")
-
-filename = 'results/least_squares_implementation_Degree_2_no_outliers.csv'
-create_csv_submission(ids_te,y_predSq_noOut,filename)
-
-print("CSV File saved as " + filename)
-
-# Quadratic model, no outlier features
-
-print("Generating degree 2 polynomial of data...")
-tx_trSq_noOutFeatures = build_poly(tx_tr_noOutFeatures, degree)
-tx_teSq_noOutFeatures = build_poly(tx_te_noOutFeatures, degree)
-print("Done!")
-
-print("Solving least squares for degree 2 polynomial of data...")
-weightsSq_noOutFeatures,lossSq_noOutFeatures = least_squares(y_tr,tx_trSq_noOutFeatures)
-y_predSq_noOutFeatures = predict_labels(weightsSq_noOutFeatures,tx_teSq_noOutFeatures)
-print("Done!")
-
-filename = 'results/least_squares_implementation_Degree_2_no_outlier_features.csv'
-create_csv_submission(ids_te,y_predSq_noOutFeatures,filename)
-
-print("CSV File saved as " + filename)
+#Best prediction score on training data is 0.8268414758357583
+#Best parameters are (degree, lambda, k) = (11, 3.1622776601683795e-05, 5)
