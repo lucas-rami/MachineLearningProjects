@@ -29,6 +29,7 @@ Our big Project has started! I'm trying to make things less hazardous as last ti
 - `[Philippe]` Trying to keep trace of the work done (This two can be deleted, just an exemple haha)
 - `[Philippe]` Extracted all the functions of `segment_aerial_image.ipynb` to a script `segment_aerial_image.py` for reusing purpose.
 - `[Philippe]` Made a _getting_used_to_ workspace to do the same process done as in `segment_aerial_image.ipynb`
+- `[Philippe]` Added an `image_processing.py` script for some openCV image manipulation.
 
 ## Questions
 
