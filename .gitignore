@@ -122,3 +122,7 @@ Project1/.vscode/settings.json
 #Visual studio crap
 .vscode
 
+# Additional datasets for project 2
+Project2/project_files/data/additionalDataset
+Project2/project_files/data/additionalDataset2
+

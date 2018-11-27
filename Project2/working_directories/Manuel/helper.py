@@ -8,13 +8,24 @@ import matplotlib.pyplot as plt
 import os,sys
 from PIL import Image
 
-def load_image(infilename):
+def load_image(infilename, outputFormat=np.float32):
     data = mpimg.imread(infilename)
+    if outputFormat == np.float32:
+        if not np.issubdtype(type(data[0,0,0]), outputFormat):
+            data = img_uint8_to_float(data)
+    elif outputFormat == np.uint8:
+        if not np.issubdtype(type(data[0,0,0]), outputFormat):
+            data = img_float_to_uint8(data)
     return data
 
 def img_float_to_uint8(img):
     rimg = img - np.min(img)
     rimg = (rimg / np.max(rimg) * 255).round().astype(np.uint8)
+    return rimg
+
+def img_uint8_to_float(img):
+    rimg = img - np.min(img)
+    rimg = (rimg / np.max(rimg)).astype(np.float32)
     return rimg
 
 # Concatenate an image and its groundtruth
@@ -98,4 +109,3 @@ def make_img_overlay(img, predicted_img):
     overlay = Image.fromarray(color_mask, 'RGB').convert("RGBA")
     new_img = Image.blend(background, overlay, 0.2)
     return new_img
-    

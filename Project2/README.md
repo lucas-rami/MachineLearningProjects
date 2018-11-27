@@ -25,11 +25,13 @@ Our big Project has started! I'm trying to make things less hazardous as last ti
 
 ## Last Work Done
 
-- `[Philippe]` Create a nice Markdown README 
+- `[Philippe]` Create a nice Markdown README
 - `[Philippe]` Trying to keep trace of the work done (This two can be deleted, just an exemple haha)
 - `[Philippe]` Extracted all the functions of `segment_aerial_image.ipynb` to a script `segment_aerial_image.py` for reusing purpose.
 - `[Philippe]` Made a _getting_used_to_ workspace to do the same process done as in `segment_aerial_image.ipynb`
 - `[Philippe]` Added an `image_processing.py` script for some openCV image manipulation.
+- `[Manuel]` Added an `preprocess.py` script for some image manipulation (resizing images, converting to the same format, cropping image into patches)
+- `[Manuel]` Modified the `helper.py` script in order to convert all images to either float32 or uint8, as the different datasets have different types for their pixels.
 
 ## Questions
 
@@ -38,7 +40,7 @@ Our big Project has started! I'm trying to make things less hazardous as last ti
 
 ## Todo list
 
-- `[x]` Create a nice Markdown README 
+- `[x]` Create a nice Markdown README
 - `[ ]` Get the knowledge for the project (Make simple tests)
 - `[ ]` Make a task list for everyone!
 - `[x]` Trying to be organized

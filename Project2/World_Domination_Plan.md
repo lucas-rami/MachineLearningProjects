@@ -25,3 +25,11 @@ Obtenir une submission telle que chaque batch de 16 pixels par 16 pixels soit as
 	SOLUTION 2: Modifier le FCN pour qu'il lie une prédiction pour chaque batch de 16x16 pixels. Cela impliquerait de d'abord downsample les images groundtruth du training set (prendre la moyenne de chaque batch de 16x16 pixels) et d'entraîner le modèle sur ça, et ça impliquera aussi de restreindre les possibilités de découpage des images du test set/training set additionnel, forçant le découpage à 16xk pixels (avec k un entier).
 
 	- `[Manuel]` Je pense que la solution 1 est mieux si on peut trouver assez de données pour que la prédiction soit assez fiable. Sinon, la solution 2 est mieux selon moi puisque la taille d'output est réduite, possiblement réduisant la taille du training set nécessaire pour avoir une prédiction décente.
+
+## UPDATE - 27.11.2018
+
+- `[Manuel]` Les datasets supplémentaires n'ont pas la même résolution spatiale (~25 pixels/largeur de route pour le dataset donné pour le projet, résolution environ deux fois plus basse pour les datasets supplémentaires). La solution la plus simple selon moi serait de diminuer la résolution du dataset de base (rassembler patches de 2x2 pixels en un pixel) pour avoir un dataset final plus uniforme, cela ne devrait pas changer substantiellement la qualité des prédictions sur le dataset de base, puisqu'on rassemble des patchs de 16x16 pixels pour les prédictions. Tests à effectuer pour vérifier si la qualité des prédiction est meilleure.
+
+- `[Manuel]` Le dataset supplémentaire 1 contient quelques images avec des parties blanches, il serait utile de supprimer les patchs qui sont en majorité blancs.
+
+- `[Manuel]` Le dataset supplémentaire 2 contient beaucoup de routes en terre, à voir s'il est vraiment utile pour le projet...
