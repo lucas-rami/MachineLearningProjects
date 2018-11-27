@@ -10,12 +10,20 @@ from PIL import Image
 
 def load_image(infilename, outputFormat=np.float32):
     data = mpimg.imread(infilename)
-    if outputFormat == np.float32:
-        if not np.issubdtype(type(data[0,0,0]), outputFormat):
-            data = img_uint8_to_float(data)
-    elif outputFormat == np.uint8:
-        if not np.issubdtype(type(data[0,0,0]), outputFormat):
-            data = img_float_to_uint8(data)
+    if len(data.shape) == 3:
+        if outputFormat == np.float32:
+            if not np.issubdtype(type(data[0,0,0]), outputFormat):
+                data = img_uint8_to_float(data)
+            elif outputFormat == np.uint8:
+                if not np.issubdtype(type(data[0,0,0]), outputFormat):
+                    data = img_float_to_uint8(data)
+    elif len(data.shape) == 2:
+        if outputFormat == np.float32:
+            if not np.issubdtype(type(data[0,0]), outputFormat):
+                data = img_uint8_to_float(data)
+            elif outputFormat == np.uint8:
+                if not np.issubdtype(type(data[0,0]), outputFormat):
+                    data = img_float_to_uint8(data)
     return data
 
 def img_float_to_uint8(img):

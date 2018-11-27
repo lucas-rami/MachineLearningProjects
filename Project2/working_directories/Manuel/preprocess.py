@@ -14,21 +14,36 @@ def crop_input_image(input_img, height, width):
     nImgs = np.zeros(2)
     imgwidth = input_img.shape[0]
     imgheight = input_img.shape[1]
-    nImgs[0] = imgwidth/width
-    nImgs[1] = imgheight/height
+    nImgs[0] = imgheight/height
+    nImgs[1] = imgwidth/width
     for i in range(int(nImgs[0])):
         for j in range(int(nImgs[1])):
-            if np.mean(np.mean(np.mean(input_img[400*i:400*(i+1),400*j:400*(j+1)])))!=255:
-                list_imgs.append(input_img[400*i:400*(i+1),400*j:400*(j+1)])
+            if np.mean(np.mean(np.mean(input_img[height*i:height*(i+1),width*j:width*(j+1)])))!=1:
+                list_imgs.append(input_img[height*i:height*(i+1),width*j:width*(j+1)])
     if not list_imgs:
         return
     return list_imgs
 
-def resize_imgs(input_imgs,height,width):
+def resize_imgs(input_imgs, height, width):
     with tf.Session() as sess:
-        resized_imgs = tf.image.resize_images(imgs,(h,w)).eval()
-    resized_imgs = resized_imgs.astype(int)
+        resized_imgs = tf.image.resize_images(input_imgs,(height,width)).eval()
+    resized_imgs = resized_imgs
     return resized_imgs
+
+def resize_binary_imgs(input_imgs, height, width):
+    bin_imgs = []
+    imgwidth = input_imgs[0].shape[0]
+    imgheight = input_imgs[0].shape[1]
+    nW = int(imgwidth/width)
+    nH = int(imgheight/height)
+    for i in range(len(input_imgs)):
+        img_tmp = np.zeros((height,width))
+        for j in range(height):
+            for k in range(width):
+                img_tmp[j,k] = np.sum(np.sum(input_imgs[i,nH*j:nH*(j+1),nW*k:nW*(k+1)]))
+        img_tmp = img_tmp/(nH*nW)
+        bin_imgs.append((img_tmp > 0.5).astype(int))
+    return bin_imgs
 
 nTrain = 10
 nAdd = 100
@@ -44,15 +59,16 @@ n = min(nTrain, len(files)) # Load maximum 20 images
 print("Loading " + str(n) + " images...")
 imgs = np.asarray([load_image(image_dir + files[i]) for i in range(n)])
 print("Done!")
-#resized_imgs = resize_imgs(imgs, 200, 200)
+resized_imgs = resize_imgs(imgs, 200, 200)
 type(imgs[0,0,0,0])
 
-plt.imshow(imgs[0])
+plt.imshow(imgs[2])
 
 gt_dir = training_dir + "groundtruth/"
 print("Loading " + str(n) + " images")
-gt_imgs = [load_image(gt_dir + files[i]) for i in range(n)]
-print(add_files[0])
+gt_imgs = np.asarray([load_image(gt_dir + files[i]) for i in range(n)])
+resized_gt_imgs = resize_binary_imgs(gt_imgs, 25,25)
+plt.imshow(resized_gt_imgs[2])
 
 
 
