@@ -9,14 +9,14 @@ Fully Convolutional Network (FCN) (apparemment c'est state-of-the-art: https://p
 ## Principe de la méthode
 Lier l'image d'input à une image de même taille dont chaque pixel est la prédiction du modèle pour le pixel d'input correspondant (dans notre cas: to road or not to road).
 
-##Objectif
+## Objectif
 Obtenir une submission telle que chaque batch de 16 pixels par 16 pixels soit assigné.
 
 ## Roadblocks
 
 * Roadblock 1: Les images du training set sont de taille 400x400 pixels, les images du test set sont de taille 608x608. Si on décide d'augmenter notre training set (et qu'on trouve des images supplémentaires...), ces images auront une taille différente. Le FCN peut seulement accepter des input de taille fixe.
 
-	SOLUTION: Entraînons le modèle sur des images de taille 400*400, puis sur les images du test set/training set additionnel, séparons les images en patchs de 400*400 pixels, en gardant la position du pixel en haut à gauche en mémoire. On pourra donc reconstruire les images entières en superposant ces patchs, prenant la moyenne des pixels d'output superposés.
+	SOLUTION: Entraînons le modèle sur des images de taille 400 * 400, puis sur les images du test set/training set additionnel, séparons les images en patchs de 400 * 400 pixels, en gardant la position du pixel en haut à gauche en mémoire. On pourra donc reconstruire les images entières en superposant ces patchs, prenant la moyenne des pixels d'output superposés.
 
 * Roadblock 2: Les outputs doivent être des prédictions pour chaque batch de 16x16 pixels.
 
