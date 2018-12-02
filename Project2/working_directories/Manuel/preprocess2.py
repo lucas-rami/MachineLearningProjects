@@ -85,7 +85,7 @@ gt_dir = training_dir + "groundtruth/"
 print("Loading " + str(n) + " images")
 gt_imgs = np.asarray([load_image(gt_dir + files[i]) for i in range(n)])
 resized_gt_imgs = np.asarray(resize_binary_imgs(gt_imgs, 25,25))
-#onehot_gt_imgs = convert_to_one_hot(gt_imgs)
+onehot_gt_imgs = convert_to_one_hot(gt_imgs)
 resized_onehot_gt_imgs = convert_to_one_hot(resized_gt_imgs)
 plt.imshow(gt_imgs[50])
 plt.imshow(resized_gt_imgs[50])
@@ -143,85 +143,3 @@ model_train = model.fit(resized_imgs[:75], resized_onehot_gt_imgs[:75], batch_si
 
 test_eval = model.evaluate(resized_imgs[75:], resized_onehot_gt_imgs[75:], verbose=0)
 print(test_eval)
-
-n = 10 # Only use 10 images for training
-
-print('Image size = ' + str(imgs[0].shape[0]) + ',' + str(imgs[0].shape[1]))
-
-# Show first image and its groundtruth image
-cimg = concatenate_images(imgs[0], gt_imgs[0])
-fig1 = plt.figure(figsize=(10, 10))
-plt.imshow(cimg, cmap='Greys_r')
-
-# Extract patches from input images
-patch_size = 16 # each patch is 16*16 pixels
-
-img_patches = [img_crop(imgs[i], patch_size, patch_size) for i in range(n)]
-gt_patches = [img_crop(gt_imgs[i], patch_size, patch_size) for i in range(n)]
-
-# Linearize list of patches
-img_patches = np.asarray([img_patches[i][j] for i in range(len(img_patches)) for j in range(len(img_patches[i]))])
-gt_patches =  np.asarray([gt_patches[i][j] for i in range(len(gt_patches)) for j in range(len(gt_patches[i]))])
-
-# Compute features for each image patch
-foreground_threshold = 0.25 # percentage of pixels > 1 required to assign a foreground label to a patch
-X = np.asarray([ extract_features_2d(img_patches[i]) for i in range(len(img_patches))])
-Y = np.asarray([value_to_class(np.mean(gt_patches[i]), foreground_threshold) for i in range(len(gt_patches))])
-
-# Print feature statistics
-
-print('Computed ' + str(X.shape[0]) + ' features')
-print('Feature dimension = ' + str(X.shape[1]))
-print('Number of classes = ' + str(np.max(Y)))  #TODO: fix, length(unique(Y))
-
-Y0 = [i for i, j in enumerate(Y) if j == 0]
-Y1 = [i for i, j in enumerate(Y) if j == 1]
-print('Class 0: ' + str(len(Y0)) + ' samples')
-print('Class 1: ' + str(len(Y1)) + ' samples')
-
-# Display a patch that belongs to the foreground class
-plt.imshow(gt_patches[Y1[3]], cmap='Greys_r')
-
-# Plot 2d features using groundtruth to color the datapoints
-plt.scatter(X[:, 0], X[:, 1], c=Y, edgecolors='k', cmap=plt.cm.Paired)
-
-# train a logistic regression classifier
-
-from sklearn import linear_model
-
-# we create an instance of the classifier and fit the data
-logreg = linear_model.LogisticRegression(C=1e5, class_weight="balanced")
-logreg.fit(X, Y)
-
-# Predict on the training set
-Z = logreg.predict(X)
-
-# Get non-zeros in prediction and grountruth arrays
-Zn = np.nonzero(Z)[0]
-Yn = np.nonzero(Y)[0]
-
-TPR = len(list(set(Yn) & set(Zn))) / float(len(Z))
-print('True positive rate = ' + str(TPR))
-
-# Plot features using predictions to color datapoints
-plt.scatter(X[:, 0], X[:, 1], c=Z, edgecolors='k', cmap=plt.cm.Paired)
-
-# Run prediction on the img_idx-th image
-img_idx = 8
-
-Xi = extract_img_features(image_dir + files[img_idx], patch_size)
-Zi = logreg.predict(Xi)
-plt.scatter(Xi[:, 0], Xi[:, 1], c=Zi, edgecolors='k', cmap=plt.cm.Paired)
-# Display prediction as an image
-
-w = gt_imgs[img_idx].shape[0]
-h = gt_imgs[img_idx].shape[1]
-predicted_im = label_to_img(w, h, patch_size, patch_size, Zi)
-cimg = concatenate_images(imgs[img_idx], predicted_im)
-fig1 = plt.figure(figsize=(10, 10)) # create a figure with the default size
-plt.imshow(cimg, cmap='Greys_r')
-
-
-new_img = make_img_overlay(imgs[img_idx], predicted_im)
-
-plt.imshow(new_img)
