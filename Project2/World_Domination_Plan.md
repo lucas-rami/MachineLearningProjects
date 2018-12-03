@@ -33,3 +33,7 @@ Obtenir une submission telle que chaque batch de 16 pixels par 16 pixels soit as
 - `[Manuel]` Le dataset supplémentaire 1 contient quelques images avec des parties blanches, il serait utile de supprimer les patchs qui sont en majorité blancs.
 
 - `[Manuel]` Le dataset supplémentaire 2 contient beaucoup de routes en terre, à voir s'il est vraiment utile pour le projet...
+
+## UPDATE - 02.12.2018
+
+- `[Manuel]` Premier test de CNN qui semble concluant (fichier preprocess.py), la loss diminue avec les epochs. Hyperparamètres à tester: nombre de filtres, quantité de dropout. Voir si remonter à une image de 200x200 améliore les prédictions.

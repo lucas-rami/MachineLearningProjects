@@ -85,7 +85,7 @@ gt_dir = training_dir + "groundtruth/"
 print("Loading " + str(n) + " images")
 gt_imgs = np.asarray([load_image(gt_dir + files[i]) for i in range(n)])
 resized_gt_imgs = np.asarray(resize_binary_imgs(gt_imgs, 25,25))
-onehot_gt_imgs = convert_to_one_hot(gt_imgs)
+#onehot_gt_imgs = convert_to_one_hot(gt_imgs)
 resized_onehot_gt_imgs = convert_to_one_hot(resized_gt_imgs)
 plt.imshow(gt_imgs[50])
 plt.imshow(resized_gt_imgs[50])
@@ -93,7 +93,7 @@ plt.imshow(resized_gt_imgs[50])
 batch_size = 25
 epochs = 100
 num_classes = 2
-alpha = 1
+alpha = 0.01
 
 model = Sequential()
 model.add(Conv2D(64, (3, 3),input_shape=(200,200,3), padding='same'))
