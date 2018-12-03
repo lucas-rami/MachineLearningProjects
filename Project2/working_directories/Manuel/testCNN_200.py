@@ -31,7 +31,7 @@ def listdir_nohidden(path):
     return list
 
 nTrain = 200
-nAdd = 100
+nAdd = 1200
 
 im_height = 200
 im_width = 200
@@ -125,7 +125,7 @@ print(all_train_imgs.shape)
 print(all_gt_imgs.shape)
 X_train, X_valid, y_train, y_valid = train_test_split(all_train_imgs, all_gt_imgs, test_size=0.15)
 
-epochs = 10
+epochs = 20
 num_classes = 2
 alpha = 0.01
 batch_size = 32
