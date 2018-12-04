@@ -31,7 +31,7 @@ def listdir_nohidden(path):
     return list
 
 nTrain = 200
-nAdd = 1200
+nAdd = 50
 
 im_height = 200
 im_width = 200
@@ -223,9 +223,16 @@ prediction_test_imgs = np.squeeze(merge_prediction_imgs(predictions_test, 304, 3
 prediction_train_imgs = np.squeeze(binarize_imgs(predictions_train, 0.25))
 gt_masks = binarize_imgs(prediction_test_imgs, 0.25)
 
-plt.imshow(resized_imgs[25])
+plt.imshow(test_imgs[3])
 
-plt.imshow(np.squeeze(prediction_train_imgs[25]))
+plt.imshow(np.squeeze(prediction_test_imgs[3]))
+
+im = Image.fromarray(prediction_test_imgs[25])
+im.save("pred1.tif")
+
+gt_masks = binarize_imgs(prediction_test_imgs, 0.25)
+imbin = Image.fromarray(gt_masks[3])
+imbin.save("pred1_bin.tif")
 
 def mask_to_submission_strings(image_filename):
     """Reads a single image and outputs the strings that should go into the submission file"""

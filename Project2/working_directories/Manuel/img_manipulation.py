@@ -73,40 +73,25 @@ def merge_test_gt_image(input_imgs, original_height, original_width):
     return merged_img
 
 def convert_to_one_hot(labels):
-    '''NOT USED (yet): Convert each entry 0 to [0,1] and each entry 1 to [1,0]
-    from groundtruth image.'''
-    converted_labels = np.zeros((labels.shape[0],labels.shape[1],labels.shape[2],2))
+    '''Convert each entry 0 to [0,1] and each entry 1 to [1,0] from groundtruth
+    image.'''
+    converted_labels = []
     for i in range(labels.shape[0]):
-        for j in range(labels.shape[1]):
-            for k in range(labels.shape[2]):
-                if labels[i,j,k] == 1:
-                    converted_labels[i,j,k] = np.asarray([1, 0])
-                else:
-                    converted_labels[i,j,k] = np.asarray([0, 1])
-    return converted_labels
+        converted_labels.append(np.stack((labels[i], 1-labels[i]),axis=-1))
+    return np.asarray(converted_labels)
 
 def resize_imgs(input_imgs, height, width):
     '''Resize images to a given height and width.'''
     with tf.Session() as sess:
         resized_imgs = tf.image.resize_images(input_imgs,(height,width)).eval()
-    resized_imgs = resized_imgs
     return resized_imgs
 
 def resize_binary_imgs(input_imgs, height, width, threshold):
     '''Resize groundtruth images to given height and width, with entries 0 or 1
     given by the threshold.'''
-    bin_imgs = []
-    imgwidth = input_imgs[0].shape[0]
-    imgheight = input_imgs[0].shape[1]
-    nW = int(imgwidth/width)
-    nH = int(imgheight/height)
-    for i in range(len(input_imgs)):
-        img_tmp = np.zeros((height,width))
-        for j in range(height):
-            for k in range(width):
-                img_tmp[j,k] = np.sum(np.sum(input_imgs[i,nH*j:nH*(j+1),nW*k:nW*(k+1)]))
-        img_tmp = img_tmp/(nH*nW)
-        bin_imgs.append((img_tmp > threshold).astype(int))
+    with tf.Session() as sess:
+        resized_imgs = tf.image.resize_images(input_imgs,(height,width)).eval()
+    bin_imgs = binarize_imgs(resized_imgs, threshold)
     return bin_imgs
 
 
