@@ -77,7 +77,7 @@ model = get_unet(input_img, num_classes, n_filters=16, dropout=0.25, batchnorm=T
 
 X_train, X_valid, y_train, y_valid = train_test_split(imgs, onehot_gt_imgs, test_size=0.2)
 print(X_train.shape)
-model.compile(optimizer=Adam(), loss="binary_crossentropy", metrics=["accuracy"])
+model.compile(optimizer=Adam(), loss="binary_crossentropy", metrics=[f1_score])
 model.summary()
 callbacks = [EarlyStopping(patience=10, verbose=1),ReduceLROnPlateau(factor=0.1, patience=3, min_lr=0.00001, verbose=1),ModelCheckpoint('test_CNN_200_train_only.h5', verbose=1, save_best_only=False, save_weights_only=True)]
 model_train = model.fit(X_train, y_train, batch_size=batch_size,epochs=epochs,callbacks=callbacks,verbose=1,validation_data=(X_valid, y_valid))
