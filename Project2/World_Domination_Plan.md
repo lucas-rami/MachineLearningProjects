@@ -37,3 +37,9 @@ Obtenir une submission telle que chaque batch de 16 pixels par 16 pixels soit as
 ## UPDATE - 02.12.2018
 
 - `[Manuel]` Premier test de CNN qui semble concluant (fichier preprocess.py), la loss diminue avec les epochs. Hyperparamètres à tester: nombre de filtres, quantité de dropout. Voir si remonter à une image de 200x200 améliore les prédictions.
+
+## UPDATE - 05.12.2018
+
+- `[Manuel]` Référence pour batch normalization: https://arxiv.org/pdf/1502.03167v3.pdf
+
+- `[Manuel]` Référence pour dropout: https://www.cs.toronto.edu/~hinton/absps/JMLRdropout.pdf

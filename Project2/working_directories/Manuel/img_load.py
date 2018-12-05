@@ -23,12 +23,10 @@ def load_training(dir, nMax, shuffle=False):
     n = min(nMax, len(files)) # Load maximum nTrain images
     if shuffle:
         files = np.random.permutation(files)
-    print("Loading " + str(n) + " images...")
     imgs = np.asarray([load_image(image_dir + files[i]) for i in range(n)])
     if ".tiff" in files[0]:
         files = [x[:-1] for x in files]
     gt_imgs = np.asarray([load_image(gt_dir + files[i]) for i in range(n)])
-    print("Done!")
     return imgs, gt_imgs
 
 def load_test(dir,im_height,im_width):
@@ -44,21 +42,48 @@ def load_test(dir,im_height,im_width):
     print("Done!")
     return resized_test_imgs
 
-def training_generator(train_dir, add_dir, nTrain, nAdd, batch_size):
- # Create empty arrays to contain batch of features and labels#
- batch_imgs = np.zeros((batch_size, 200, 200, 3))
- batch_gt_imgs = np.zeros((batch_size, 200, 200, 1))
- files = os.listdir(image_dir)
- files.sort()
- n = min(nTrain, len(files)) # Load maximum nTrain images
- print("Loading " + str(n) + " images...")
- imgs = np.asarray([load_image(image_dir + files[i]) for i in range(n)])
- print("Done!")
- resized_imgs = np.asarray(resize_imgs(imgs,im_height,im_width))
- while True:
-   for i in range(batch_size):
-     # choose random index in features
-     index= random.choice(len(features),1)
-     batch_imgs[i] = some_processing(features[index])
-     batch_gt_imgs[i] = labels[index]
-   yield batch_features, batch_labels
+def training_generator(train_dir, add_dir, nTrain, nAdd, batch_size, ratio=0):
+    # Create empty arrays to contain batch of features and labels#
+    batch_imgs = np.zeros((batch_size, 200, 200, 3))
+    batch_output_gt_imgs = np.zeros((batch_size, 200, 200, 2))
+    add_image_dir = add_dir + "images/"
+    add_gt_dir = add_dir + "groundtruth/"
+    train_image_dir = train_dir + "images/"
+    train_files = listdir_nohidden(train_image_dir)
+    add_files = listdir_nohidden(add_image_dir)
+    if ratio == 0:
+        frac_train = nTrain/(nTrain+nAdd)
+        nTrainActual = min(min(int(batch_size*frac_train),nTrain),len(train_files))
+        nAddActual = batch_size-nTrainActual
+    elif ratio == float('inf'):
+        nTrainActual = min(min(batch_size,nTrain),len(train_files))
+        nAddActual = batch_size-nTrainActual
+        if nAddActual < 0:
+            error("nTrain should be smaller than batch_size!")
+    else:
+        nTrainActual = min(min(int(ratio*batch_size),nTrain),len(train_files))
+        nAddActual = batch_size-nTrainActual
+    while True:
+        train_files = np.random.permutation(train_files)
+        add_files = np.random.permutation(add_files)
+        train_imgs, train_gts = load_training(train_dir, nTrainActual,shuffle=True)
+        batch_imgs[:nTrainActual] = np.asarray(resize_imgs(train_imgs, 200, 200))
+        batch_onehot_train_gts = convert_to_one_hot(train_gts[:nTrainActual])
+        batch_output_gt_imgs[:nTrainActual] = np.asarray(resize_binary_imgs(batch_onehot_train_gts,200,200,0.25))
+        index_add = 0
+        while index_add < nAddActual:
+            img_add_tmp = np.expand_dims(load_image(add_image_dir + add_files[index_add]),axis=0)
+            gt_add_tmp = np.expand_dims(load_image(add_gt_dir + add_files[index_add][:-1]),axis=0)
+            add_img_patches = make_patches(img_add_tmp,200,200)
+            add_gt_patches = make_patches(gt_add_tmp,200,200)
+            add_onehot_gt_patches = convert_to_one_hot(add_gt_patches)
+            sel_add_imgs, sel_add_onehot_gts = select_imgs(add_img_patches, add_onehot_gt_patches, 0.7)
+            nAddSel = len(sel_add_imgs)
+            if nAddActual-index_add >= nAddSel:
+                batch_imgs[nTrainActual+index_add:nTrainActual+index_add+nAddSel] = sel_add_imgs
+                batch_output_gt_imgs[nTrainActual+index_add:nTrainActual+index_add+nAddSel] = sel_add_onehot_gts
+            else:
+                batch_imgs[nTrainActual+index_add:] = sel_add_imgs[:nAddActual-index_add]
+                batch_output_gt_imgs[nTrainActual+index_add:] = sel_add_onehot_gts[:nAddActual-index_add]
+            index_add += nAddSel
+        yield batch_imgs, batch_output_gt_imgs
