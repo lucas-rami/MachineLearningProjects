@@ -75,7 +75,7 @@ num_iters = 1
 input_img = Input((im_height, im_width, 3), name='img')
 model = get_unet(input_img, num_classes, n_filters=16, dropout=0.25, batchnorm=True)
 
-X_train, X_valid, y_train, y_valid = train_test_split(imgs, onehot_gt_imgs, test_size=0.10)
+X_train, X_valid, y_train, y_valid = train_test_split(imgs, onehot_gt_imgs, test_size=0.2)
 print(X_train.shape)
 model.compile(optimizer=Adam(), loss="binary_crossentropy", metrics=["accuracy"])
 model.summary()
