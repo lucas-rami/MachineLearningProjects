@@ -105,7 +105,7 @@ for i in range(num_iters):
     if os.path.isfile('test_CNN_200_oneHot.h5'):
         model.load_weights('test_CNN_200_oneHot.h5')
     model.compile(optimizer=Adam(), loss="binary_crossentropy", metrics=[f1_score])
-    callbacks = [EarlyStopping(patience=2, verbose=1),ReduceLROnPlateau(factor=0.1, patience=2, min_lr=0.00001, verbose=1),ModelCheckpoint('test_CNN_200_oneHot.h5', verbose=1, save_best_only=True, save_weights_only=True)]
+    callbacks = [EarlyStopping(patience=5, verbose=1),ReduceLROnPlateau(factor=0.1, patience=3, min_lr=0.00001, verbose=1),ModelCheckpoint('test_CNN_200_oneHot.h5', verbose=1, save_best_only=True, save_weights_only=True)]
     model_train = model.fit(all_train_imgs, all_train_gts, batch_size=batch_size,epochs=epochs,callbacks=callbacks,verbose=1,validation_data=(resized_val_imgs, resized_onehot_val_gt_imgs))
     with open('CNN_200_onehot_'+str(i+1)+'.history', 'wb') as file_pi:
         pickle.dump(model_train.history, file_pi)
