@@ -31,7 +31,7 @@ from shutil import copyfile
 random.seed(1)
 
 nTrain = 200
-nAdd = 50
+nAdd = 100
 
 im_height = 200
 im_width = 200
@@ -71,11 +71,11 @@ def train_test_split(X, y, test_size=0.15):
         X_train, X_valid, y_train, y_valid = train_test_split(X, y, test_size=0.15)
     return np.asarray(X_train), np.asarray(X_valid), np.asarray(y_train), np.asarray(y_valid)
 
-epochs = 1
+epochs = 20
 num_classes = 2
 alpha = 0.01
 batch_size = 32
-num_iters = 7
+num_iters = 10
 
 input_img = Input((im_height, im_width, 3), name='img')
 model = get_unet(input_img, num_classes, n_filters=16, dropout=0.25, batchnorm=True)
@@ -94,7 +94,7 @@ for i in range(num_iters):
         model.load_weights('test_CNN_200.h5')
     model.compile(optimizer=Adam(), loss="binary_crossentropy", metrics=["accuracy"])
     model.summary()
-    callbacks = [EarlyStopping(patience=2, verbose=1),ReduceLROnPlateau(factor=0.1, patience=2, min_lr=0.00001, verbose=1),ModelCheckpoint('test_CNN_200.h5', verbose=1, save_best_only=True, save_weights_only=True)]
+    callbacks = [EarlyStopping(patience=2, verbose=1),ReduceLROnPlateau(factor=0.1, patience=2, min_lr=0.00001, verbose=1),ModelCheckpoint('test_CNN_200_'+str(i)+'_{epoch:03d}.h5', verbose=1, save_best_only=True, save_weights_only=True)]
     model_train = model.fit(X_train, y_train, batch_size=batch_size,epochs=epochs,callbacks=callbacks,verbose=1,validation_data=(X_valid, y_valid))
     copyfile('test_CNN_200.h5', 'test_CNN_200_'+str(i)+'.h5')
     print("Done!")

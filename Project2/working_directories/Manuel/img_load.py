@@ -87,3 +87,43 @@ def training_generator(train_dir, add_dir, nTrain, nAdd, batch_size, ratio=0):
                 batch_output_gt_imgs[nTrainActual+index_add:] = sel_add_onehot_gts[:nAddActual-index_add]
             index_add += nAddSel
         yield batch_imgs, batch_output_gt_imgs
+
+def training_generator_aug(train_dir, batch_size):
+    # Create empty arrays to contain batch of features and labels#
+    batch_imgs = np.zeros((batch_size, 400, 400, 3))
+    batch_output_gt_imgs = np.zeros((batch_size, 400, 400, 2))
+    train_image_dir = train_dir + "images/"
+    train_files = listdir_nohidden(train_image_dir)
+    while True:
+        for i in range(batch_size):
+            tmp_img, tmp_gt = load_training(train_dir, 1, shuffle=True)
+            tmp_onehot_gt = convert_to_one_hot(tmp_gt)
+            transform = np.random.random()*8
+            with tf.Session() as sess:
+                mirror_img = tf.image.flip_left_right(tmp_img).eval()
+                mirror_gt = tf.image.flip_left_right(tmp_onehot_gt).eval()
+                if transform < 1:
+                    batch_imgs[i] = tmp_img
+                    batch_output_gt_imgs[i] = tmp_onehot_gt
+                elif transform < 2:
+                    batch_imgs[i] = tf.image.rot90(tmp_img,k=1).eval()
+                    batch_output_gt_imgs[i] = tf.image.rot90(tmp_onehot_gt,k=1).eval()
+                elif transform < 3:
+                    batch_imgs[i] = tf.image.rot90(tmp_img,k=2).eval()
+                    batch_output_gt_imgs[i] = tf.image.rot90(tmp_onehot_gt,k=2).eval()
+                elif transform < 4:
+                    batch_imgs[i] = tf.image.rot90(tmp_img,k=3).eval()
+                    batch_output_gt_imgs[i] = tf.image.rot90(tmp_onehot_gt,k=3).eval()
+                elif transform < 5:
+                    batch_imgs[i] = mirror_img
+                    batch_output_gt_imgs[i] = mirror_gt
+                elif transform < 6:
+                    batch_imgs[i] = tf.image.rot90(mirror_img,k=1).eval()
+                    batch_output_gt_imgs[i] = tf.image.rot90(mirror_gt,k=1).eval()
+                elif transform < 7:
+                    batch_imgs[i] = tf.image.rot90(mirror_img,k=2).eval()
+                    batch_output_gt_imgs[i] = tf.image.rot90(mirror_gt,k=2).eval()
+                else:
+                    batch_imgs[i] = tf.image.rot90(mirror_img,k=3).eval()
+                    batch_output_gt_imgs[i] = tf.image.rot90(mirror_gt,k=3).eval()
+        yield batch_imgs, batch_output_gt_imgs

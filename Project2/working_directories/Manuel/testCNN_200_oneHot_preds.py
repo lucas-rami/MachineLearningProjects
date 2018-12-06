@@ -83,7 +83,7 @@ test_dir = root_dir + "test_set_images/"
 resized_test_imgs = load_test(test_dir,im_height,im_width)
 
 predictions_test = model.predict(resized_test_imgs,verbose=1)
-print(predictions_test.shape)
+print(predictions_test)
 ratio=1.06
 prediction_gts = predictions_to_masks(predictions_test,ratio)
 print(predictions_test[1])
