@@ -144,29 +144,29 @@ def img_reconstruct(patches, overlap_image, h_overlap=0, v_overlap=0):
     for i in range(nb_h_patches):
         
         # Determine the vertical bounds
-        v_bound_low = i * patch_size
-        v_bound_high = (i + 1) * patch_size
+        h_bound_low = i * patch_size
+        h_bound_high = (i + 1) * patch_size
         if i == nb_h_patches - 1:
-            v_bound_low = height - patch_size
-            v_bound_high = height
+            h_bound_low = height - patch_size
+            h_bound_high = height
         
         for j in range(nb_w_patches):
             
             # Determine the horizontal bounds
-            h_bound_low = j * patch_size
-            h_bound_high = (j + 1) * patch_size
+            w_bound_low = j * patch_size
+            w_bound_high = (j + 1) * patch_size
             if i == nb_w_patches - 1:
-                h_bound_low = width - patch_size
-                h_bound_high = width
+                w_bound_low = width - patch_size
+                w_bound_high = width
 
             patch = patches[i * nb_w_patches + j]
 
             # Iterate over each pixel in the patch to fill the image
             k_patch = 0
-            for k in range(v_bound_low, v_bound_high, 1):
+            for k in range(h_bound_low, h_bound_high, 1):
                 l_patch = 0
-                for l in range(h_bound_low, h_bound_high, 1):
-                    image[l , k] += patch[l_patch, k_patch]
+                for l in range(w_bound_low, w_bound_high, 1):
+                    image[l , k] += patch[k_patch, l_patch]
                     l_patch += 1
                 k_patch += 1
 
