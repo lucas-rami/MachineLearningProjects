@@ -49,3 +49,5 @@ Obtenir une submission telle que chaque batch de 16 pixels par 16 pixels soit as
 - `[Manuel]` Source du score F1: https://www.kaggle.com/teasherm/keras-metric-for-f-score-tf-only
 
 - `[Manuel]` Référence pour data augmentation: https://medium.com/nanonets/how-to-use-deep-learning-when-you-have-limited-data-part-2-data-augmentation-c26971dc8ced
+
+- `[Manuel]` Référence pour valeur du dropout: http://mipal.snu.ac.kr/images/1/16/Dropout_ACCV2016.pdf

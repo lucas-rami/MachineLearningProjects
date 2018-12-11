@@ -85,7 +85,7 @@ batch_size = 32
 num_iters = 20
 
 input_img = Input((im_height, im_width, 3), name='img')
-model = get_unet(input_img, num_classes, n_filters=16, dropout=0.25, batchnorm=True)
+model = get_unet(input_img, num_classes, n_filters=512, dropout=0.25, batchnorm=True)
 
 model_accuracy = []
 model_loss = []

@@ -21,6 +21,7 @@ from img_load import *
 from modelCNN_200 import *
 from submission import *
 from shutil import copyfile
+import math
 
 # Make script reproducible
 random.seed(1)
@@ -46,7 +47,7 @@ plt.imshow(resized_imgs[13])
 
 onehot_gt_imgs = convert_to_one_hot(gt_imgs)
 resized_onehot_gt_imgs = np.asarray(resize_binary_imgs(onehot_gt_imgs,gt_height,gt_width,0.25))
-plt.imshow(gt_imgs[13])
+plt.imshow(resized_onehot_gt_imgs[13,:,:,0])
 
 add_dir = root_dir + "additionalDataset/"
 
@@ -75,8 +76,8 @@ num_iters = 7
 input_img = Input((im_height, im_width, 3), name='img')
 model = get_unet(input_img, num_classes, n_filters=16, dropout=0.25, batchnorm=True)
 
-model.load_weights('test_CNN_200.h5')
-
+model.load_weights('test_CNN_200_oneHot_iter2.h5')
+model.summary()
 
 
 test_dir = root_dir + "test_set_images/"
@@ -84,7 +85,7 @@ resized_test_imgs = load_test(test_dir,im_height,im_width)
 
 predictions_test = model.predict(resized_test_imgs,verbose=1)
 print(predictions_test)
-ratio=1.06
+ratio=1.5
 prediction_gts = predictions_to_masks(predictions_test,ratio)
 print(predictions_test[1])
 print(prediction_gts[1])
@@ -93,14 +94,15 @@ print(prediction_gts.shape)
 prediction_test_imgs = merge_prediction_imgs(prediction_gts, 304, 304)
 gt_masks = binarize_imgs(prediction_test_imgs, 0.5)
 
-resized_gt_masks = np.squeeze(np.asarray(resize_binary_imgs(gt_masks, 38, 38, 0.8)))
+resized_gt_masks = np.squeeze(np.asarray(resize_binary_imgs(gt_masks, 38, 38, 0.2)))
 print(gt_masks.shape)
 print(resized_gt_masks.shape)
-plt.imshow(resized_test_imgs[36])
-plt.imshow(np.squeeze(gt_masks[18]))
-plt.imshow(np.squeeze(resized_gt_masks[18]))
+plt.imshow(resized_test_imgs[30])
+plt.imshow(np.squeeze(gt_masks[25]))
+plt.imshow(np.squeeze(resized_gt_masks[25]))
 
 mask_files = []
+full_mask_files = []
 test_files = listdir_nohidden(test_dir)
 test_files.sort()
 for i in range(len(resized_gt_masks)):
@@ -108,4 +110,10 @@ for i in range(len(resized_gt_masks)):
     im = Image.fromarray(resized_gt_masks[i].astype(np.float32))
     im.save(mask_files[i])
 
-masks_to_submission("test_FCN_200.csv", mask_files)
+
+for i in range(len(prediction_test_imgs)):
+    full_mask_files.append("full_masks/"+test_files[i]+".tiff")
+    im = Image.fromarray(np.squeeze(prediction_test_imgs[i]).astype(np.float32))
+    im.save(full_mask_files[i])
+
+masks_to_submission("test_FCN_200_iter2.csv", mask_files)
