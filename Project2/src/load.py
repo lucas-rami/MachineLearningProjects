@@ -15,6 +15,9 @@ TEST_IMAGES_DIR = DATA_DIR + "test_set_images/"
 TRAINING_IMAGES_DIR = DATA_DIR + "training/images/"
 GROUNDTRUTH_DIR = DATA_DIR + "training/groundtruth/"
 
+# ========= CONSTANTS =========
+SIZE_TEST_SET = 50
+
 
 def load_training_set(max_nb_images=-1):
     """Loads the training images as well as their corresponding groundtruth images
@@ -106,4 +109,31 @@ def load_data(path, max_nb_images=-1):
             return np.empty()
 
     return np.asarray(imgs)
+
+def load_test_set():
+    """Loads all images from the test set.
+    
+    The function returns an empty array if any image from the test set could 
+    not be loaded. 
+
+    Returns:
+        SIZE_TEST_SET x H x W x Y tensor: The list of all test images.
+    """
+
+    # Get list of filepaths
+    test_images = [TEST_IMAGES_DIR + "test_{}/test_{}.png".format(i, i) for i in range(1, SIZE_TEST_SET + 1)]
+
+    # Load the images
+    imgs = []
+    for image_filename in test_images:
+        if os.path.isfile(image_filename):
+            imgs.append(mpimg.imread(image_filename))
+        else:
+            print ('Failed to load ' + image_filename + ', aborting.')
+            return np.empty()
+
+    return np.asarray(imgs)
+
+
+
 
