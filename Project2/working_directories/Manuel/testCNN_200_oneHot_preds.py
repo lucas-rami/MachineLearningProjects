@@ -76,7 +76,7 @@ num_iters = 7
 input_img = Input((im_height, im_width, 3), name='img')
 model = get_unet(input_img, num_classes, n_filters=16, dropout=0.25, batchnorm=True)
 
-model.load_weights('test_CNN_200_oneHot_iter2.h5')
+model.load_weights('test_CNN_200_oneHot_rot_iter3.h5')
 model.summary()
 
 
@@ -85,16 +85,16 @@ resized_test_imgs = load_test(test_dir,im_height,im_width)
 
 predictions_test = model.predict(resized_test_imgs,verbose=1)
 print(predictions_test)
-ratio=1.5
+ratio=5.
 prediction_gts = predictions_to_masks(predictions_test,ratio)
 print(predictions_test[1])
 print(prediction_gts[1])
 prediction_gts = np.expand_dims(prediction_gts,axis=3)
 print(prediction_gts.shape)
 prediction_test_imgs = merge_prediction_imgs(prediction_gts, 304, 304)
-gt_masks = binarize_imgs(prediction_test_imgs, 0.5)
+gt_masks = binarize_imgs(prediction_test_imgs, 0.25)
 
-resized_gt_masks = np.squeeze(np.asarray(resize_binary_imgs(gt_masks, 38, 38, 0.2)))
+resized_gt_masks = np.squeeze(np.asarray(resize_binary_imgs(gt_masks, 38, 38, 0)))
 print(gt_masks.shape)
 print(resized_gt_masks.shape)
 plt.imshow(resized_test_imgs[30])
@@ -116,4 +116,4 @@ for i in range(len(prediction_test_imgs)):
     im = Image.fromarray(np.squeeze(prediction_test_imgs[i]).astype(np.float32))
     im.save(full_mask_files[i])
 
-masks_to_submission("test_FCN_200_iter2.csv", mask_files)
+masks_to_submission("test_FCN_200_rot_tuned.csv", mask_files)
