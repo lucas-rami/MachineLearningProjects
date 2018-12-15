@@ -1,12 +1,34 @@
 #-*- coding: utf-8 -*-
-"""Splitting images into potentially overlapping patches."""
+"""Splitting images into (potentially overlapping) patches."""
 
 import numpy as np
 
 MIN_PATCH_SIZE = 16
 
-def img_patch(image, patch_size, h_overlap=0, w_overlap=0):
-    """Separates `image` into multiple patches of size `patch_size` * `patch_size`,
+def make_patch_and_flatten(images, patch_size, overlap=0):
+    """Splits all images from an array into patches, and flattens the resulting array.
+    
+    Args:
+        images (N x H x W (x Y) tensor): An array of images.
+        patch_size (int): The patch size to use to make patches out of the images.
+        overlap (int): The minimum amount of horizontal and vertical overlapping between patches (0 by default).
+    Returns:
+        N*M x patch_size x patch_size (x Y) tensor: The flattened array of patches for all the images.
+        int: The number of patches per image (M in the returned tensor).
+    """
+
+    # Make patches
+    patches = [img_patch(images[i], patch_size, overlap) for i in range(images)]
+    # Flatten the array
+    patches_flat = [patches[i][j] for i in range(len(patches)) for j in range(len(patches[i]))]
+    # Compute number of patches per image
+    nb_patch_per_image = len(patches_flat) / len(images)
+    # Return
+    return np.asarray(patches_flat), nb_patch_per_image
+
+
+def img_patch(image, patch_size, overlap=0):
+    """Splits `image` into multiple patches of size `patch_size` * `patch_size`,
     possibly overlapping each other.
 
     The function returns an "overlap image" which is as big as the original image and in
@@ -19,13 +41,12 @@ def img_patch(image, patch_size, h_overlap=0, w_overlap=0):
     to `min(width,height)` and explicit overlapping is disabled.
 
     Args:
-        image (height * width * X tensor or height * width tensor): An image.
+        image (H x W (x Y) tensor): An image.
         patch_size (int): The patch size to use to make patches out of the image.
-        h_overlap (int): The minimum amount of horizontal overlapping between patches.
-        v_overlap (int): The minimum amount of vertical overlapping between patches.
+        overlap (int): The minimum amount of horizontal and vertical overlapping between patches (0 by default).
     Returns:
-        nb_patch * patch_size * patch_size * X tensor : The array of patches for the original image.
-        height * width tensor : An "overlap image" to be used during image recontruction from patches.
+        nb_patch x patch_size x patch_size (x Y) tensor : The array of patches for the original image.
+        H * W tensor : An "overlap image" to be used during image recontruction from patches.
     """
 
     # Argument checking
@@ -33,8 +54,8 @@ def img_patch(image, patch_size, h_overlap=0, w_overlap=0):
         raise ValueError("Tensor image must have 2 or 3 dimensions.")
     if patch_size < MIN_PATCH_SIZE:
         raise ValueError("Integer patch_size must be greater than or equal to MIN_PATCH_SIZE.")
-    if h_overlap >= patch_size or w_overlap >= patch_size:
-        raise ValueError("h_overlap and v_overlap must be stricty lesser than patch_size")
+    if overlap >= patch_size:
+        raise ValueError("overlap must be stricty lesser than patch_size")
 
     # Get image dimensions
     height = image.shape[0]
@@ -43,16 +64,14 @@ def img_patch(image, patch_size, h_overlap=0, w_overlap=0):
     # Reduce the patch size and remove overlap if the image is too small
     if patch_size > width or patch_size > height:
         patch_size = min(width, height)
-        h_overlap = 0
-        w_overlap = 0
+        overlap = 0
 
     # Compute the size of a patch taking into account overlap values
-    h_patch_overlapped_size = patch_size - h_overlap
-    w_patch_overlapped_size = patch_size - w_overlap
+    patch_overlapped_size = patch_size - overlap
 
     # Compute number of horizontal/vertical patches
-    nb_h_patches = int(height / h_patch_overlapped_size) - (1 if height % h_patch_overlapped_size == 0 else 0)
-    nb_w_patches = int(width / w_patch_overlapped_size) - (1 if width % w_patch_overlapped_size == 0 else 0)
+    nb_h_patches = int(height / patch_overlapped_size) - (1 if height % patch_overlapped_size == 0 else 0)
+    nb_w_patches = int(width / patch_overlapped_size) - (1 if width % patch_overlapped_size == 0 else 0)
 
     # Generate patches and overlap image
     overlap_image = np.zeros(shape=(height,width), dtype=int)
@@ -88,7 +107,7 @@ def img_patch(image, patch_size, h_overlap=0, w_overlap=0):
 
     return np.asarray(patches), overlap_image
 
-def img_reconstruct(patches, overlap_image, h_overlap=0, v_overlap=0):
+def img_reconstruct(patches, overlap_image, overlap=0):
     """Reconstructs an image from multiple patches, possibly overlapping each other.
 
     This function is meant to be used in conjuction with img_patch(). It performs its
@@ -98,17 +117,16 @@ def img_reconstruct(patches, overlap_image, h_overlap=0, v_overlap=0):
     Example:
 
         # let image represent an RGB image
-        patches, overlap_image = img_patch(image, patch_size, h_overlap, w_overlap)
-        reconstructed_image = img_reconstruct(patches, overlap_image, h_overlap, v_overlap)
+        patches, overlap_image = img_patch(image, patch_size, overlap)
+        reconstructed_image = img_reconstruct(patches, overlap_image, overlap)
         # we now have image == reconstrcuted_image
 
     Args:
-        patches (nb_patches * patch_size * patch_size * X tensor or patch_size * patch_size * X tensor tensor): A list of patches.
-        overlap_image (height * width tensor): The "overlap image" associate to the patches.
-        h_overlap (int): The minimum amount of horizontal overlapping between patches.
-        v_overlap (int): The minimum amount of vertical overlapping between patches.
+        patches (nb_patches x patch_size x patch_size (x Y) tensor): A list of patches.
+        overlap_image (H x W tensor): The "overlap image" associate to the patches.
+        overlap (int): The minimum amount of horizontal and vertical overlapping between patches (0 by default).
     Returns:
-        height * width * X or height * width tensor : The original image reconstructed from the patches.
+        H x W (x Y) tensor : The original image reconstructed from the patches.
     """
 
     # Derive patch size and original width and height from arguments
@@ -123,8 +141,8 @@ def img_reconstruct(patches, overlap_image, h_overlap=0, v_overlap=0):
         raise ValueError("overlap_image must have shape (width, height).")
     if patch_size < MIN_PATCH_SIZE:
         raise ValueError("Integer patch_size must be greater than or equal to MIN_PATCH_SIZE.")
-    if h_overlap >= patch_size or v_overlap >= patch_size:
-        raise ValueError("h_overlap and v_overlap must be stricty lesser than patch_size")
+    if overlap >= patch_size:
+        raise ValueError("overlap must be stricty lesser than patch_size")
 
     # Create array for original image
     image = []
@@ -134,12 +152,11 @@ def img_reconstruct(patches, overlap_image, h_overlap=0, v_overlap=0):
         image = np.ndarray(shape=( width, height, patches[0].shape[2]))
 
     # Compute the size of a patch taking into account overlap values
-    w_patch_overlapped_size = patch_size - h_overlap
-    h_patch_overlapped_size = patch_size - v_overlap
+    patch_overlapped_size = patch_size - overlap
 
     # Compute number of horizontal/vertical patches
-    nb_w_patches = int(width / w_patch_overlapped_size) - (1 if width % w_patch_overlapped_size == 0 else 0)
-    nb_h_patches = int(width / h_patch_overlapped_size) - (1 if height % h_patch_overlapped_size == 0 else 0)
+    nb_h_patches = int(height / patch_overlapped_size) - (1 if height % patch_overlapped_size == 0 else 0)
+    nb_w_patches = int(width / patch_overlapped_size) - (1 if width % patch_overlapped_size == 0 else 0)
 
     for i in range(nb_h_patches):
 
