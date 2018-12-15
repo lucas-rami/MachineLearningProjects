@@ -2,9 +2,9 @@
 
 ## Team Members
 
-* Lucas Ramirez
-* Manuel Cordova
-* Philippe Weier
+* Lucas Ramirez (lucas.ramirez@epfl.ch)
+* Manuel Cordova (manuel.cordova@epfl.ch)
+* Philippe Weier (philippe.weier@epfl.ch)
 
 ## Directory Structure
 
