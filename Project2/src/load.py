@@ -61,6 +61,7 @@ def load_training_set_and_patch(patch_size, overlap=0, max_nb_images=-1):
     Returns:
         (N*M) x H x W x Y tensor: A tensor of N*M RGB(A) patches of training images.
         (N*M) x H x W tensor: A tensor of N*M black and white patches of groundtruth images corresponding to the training samples.
+        H x W tensor : An "overlap image" to be used during image recontruction from patches.
         int: The number of patches per image (M in the returned tensors).
     """
 
@@ -70,10 +71,10 @@ def load_training_set_and_patch(patch_size, overlap=0, max_nb_images=-1):
         return np.empty(), np.empty()
 
     # Make patches out of everything
-    training_patches, nb_patches_per_image = patch.make_patch_and_flatten(training_images, patch_size, overlap)
-    groundtruth_patches, _ = patch.make_patch_and_flatten(groundtruth_images, patch_size, overlap)
+    training_patches, overlap_image, nb_patches_per_image = patch.make_patch_and_flatten(training_images, patch_size, overlap)
+    groundtruth_patches, _ , _= patch.make_patch_and_flatten(groundtruth_images, patch_size, overlap)
 
-    return training_patches, groundtruth_patches, nb_patches_per_image
+    return training_patches, groundtruth_patches, overlap_image, nb_patches_per_image
 
 def load_data(path, max_nb_images=-1):
     """Loads images from the directory pointed to by `path`.

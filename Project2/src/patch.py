@@ -14,18 +14,54 @@ def make_patch_and_flatten(images, patch_size, overlap=0):
         overlap (int): The minimum amount of horizontal and vertical overlapping between patches (0 by default).
     Returns:
         N*M x patch_size x patch_size (x Y) tensor: The flattened array of patches for all the images.
+        H x W tensor : An "overlap image" to be used during image recontruction from patches.
         int: The number of patches per image (M in the returned tensor).
     """
 
     # Make patches
-    patches = [img_patch(images[i], patch_size, overlap) for i in range(images)]
+    patches = [img_patch(images[i], patch_size, overlap)[0] for i in range(images)]
     # Flatten the array
     patches_flat = [patches[i][j] for i in range(len(patches)) for j in range(len(patches[i]))]
     # Compute number of patches per image
     nb_patch_per_image = len(patches_flat) / len(images)
+    # Get the overlap image
+    _, overlap_image = img_patch(images[0], patch_size, overlap)
     # Return
-    return np.asarray(patches_flat), nb_patch_per_image
+    return np.asarray(patches_flat), overlap_image, nb_patch_per_image
 
+def reconstruct_from_flatten(all_patches, overlap_image, nb_patch_per_image, overlap=0):
+    """Reconstructs a set of images from an array of patches belonging to multiple images.
+
+    This function is meant to be used in conjuction with `make_patch_and_flatten()`. It performs its
+    inverse operation, i.e. re-constructing the original array of images from the patches and the
+    "overlap image" returned by `make_patch_and_flatten()`.
+
+    Example:
+
+        # let images represent an array of images
+        patches, overlap_image, nb_patch_per_image  = make_patch_and_flatten(images, patch_size, overlap)
+        reconstructed_images = reconstruct_from_flatten(patches, overlap_image, nb_patch_per_image, overlap)
+        # we now have images == reconstrcuted_images
+
+    Args:
+        patches (N x patch_size x patch_size (x Y) tensor): A list of patches.
+        overlap_image (H x W tensor): The "overlap image" associate to the patches.
+        overlap (int): The minimum amount of horizontal and vertical overlapping between patches (0 by default).
+    Returns:
+        H x W (x Y) tensor : The original image reconstructed from the patches.
+    """
+    reconstructed = []
+    nb_images = len(all_patches) / nb_patch_per_image
+    index_low = 0
+    index_high = nb_patch_per_image
+
+    # Reconstruct all images
+    for _ in range(nb_images):
+        reconstructed.append(img_reconstruct(all_patches[index_low, index_high], overlap_image, overlap))
+        index_low = index_high
+        index_high += nb_patch_per_image
+    
+    return np.asarray(reconstructed)
 
 def img_patch(image, patch_size, overlap=0):
     """Splits `image` into multiple patches of size `patch_size` * `patch_size`,
@@ -45,8 +81,8 @@ def img_patch(image, patch_size, overlap=0):
         patch_size (int): The patch size to use to make patches out of the image.
         overlap (int): The minimum amount of horizontal and vertical overlapping between patches (0 by default).
     Returns:
-        nb_patch x patch_size x patch_size (x Y) tensor : The array of patches for the original image.
-        H * W tensor : An "overlap image" to be used during image recontruction from patches.
+        N x patch_size x patch_size (x Y) tensor : The array of patches for the original image.
+        H x W tensor : An "overlap image" to be used during image recontruction from patches.
     """
 
     # Argument checking
@@ -110,19 +146,19 @@ def img_patch(image, patch_size, overlap=0):
 def img_reconstruct(patches, overlap_image, overlap=0):
     """Reconstructs an image from multiple patches, possibly overlapping each other.
 
-    This function is meant to be used in conjuction with img_patch(). It performs its
+    This function is meant to be used in conjuction with `img_patch()`. It performs its
     inverse operation, i.e. re-constructing the original image from the patches and the
-    "overlap image" returned by img_patch().
+    "overlap image" returned by `img_patch()`.
 
     Example:
 
-        # let image represent an RGB image
+        # let image represent an image
         patches, overlap_image = img_patch(image, patch_size, overlap)
         reconstructed_image = img_reconstruct(patches, overlap_image, overlap)
         # we now have image == reconstrcuted_image
 
     Args:
-        patches (nb_patches x patch_size x patch_size (x Y) tensor): A list of patches.
+        patches (N x patch_size x patch_size (x Y) tensor): A list of patches.
         overlap_image (H x W tensor): The "overlap image" associate to the patches.
         overlap (int): The minimum amount of horizontal and vertical overlapping between patches (0 by default).
     Returns:
