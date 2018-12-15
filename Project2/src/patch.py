@@ -1,5 +1,5 @@
 #-*- coding: utf-8 -*-
-"""Splitting images into (potentially overlapping) patches."""
+"""Splitting images into (potentially overlapping) patches and reconstructing them."""
 
 import numpy as np
 
