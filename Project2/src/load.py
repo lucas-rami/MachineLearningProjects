@@ -15,9 +15,12 @@ TEST_IMAGES_DIR = DATA_DIR + "test_set_images/"
 TRAINING_IMAGES_DIR = DATA_DIR + "training/images/"
 GROUNDTRUTH_DIR = DATA_DIR + "training/groundtruth/"
 
+ADDITIONAL_DATA_DIR = DATA_DIR + "additionalDataset/"
+ADDITIONAL_TRAINING = ADDITIONAL_DATA_DIR + "images/"
+ADDITIONAL_GROUNDTRUTH = ADDITIONAL_DATA_DIR + "groundtruth/"
+
 # ========= CONSTANTS =========
 SIZE_TEST_SET = 50
-
 
 def load_training_set(max_nb_images=-1):
     """Loads the training images as well as their corresponding groundtruth images
@@ -36,8 +39,8 @@ def load_training_set(max_nb_images=-1):
     """
 
     # Load images
-    training_images = load_data(TRAINING_IMAGES_DIR, max_nb_images)
-    groundtruth_images = load_data(GROUNDTRUTH_DIR, max_nb_images)
+    training_images = load_data_from_dir(TRAINING_IMAGES_DIR, max_nb_images)
+    groundtruth_images = load_data_from_dir(GROUNDTRUTH_DIR, max_nb_images)
 
     # Check tensor sizes
     if len(training_images) == 0 or len(groundtruth_images) == 0 or len(training_images) != len(groundtruth_images):
@@ -50,7 +53,7 @@ def load_training_set_and_patch(patch_size, overlap=0, max_nb_images=-1):
     from their respective directories and make patches out of them.
     
     See function `img_patch()` in `pacth.py` for the meaning of arguments `patch_size`, 
-    `overlap`.
+    and `overlap`.
 
     The function returns empty arrays if either:
     - an image from the training set could not be loaded
@@ -79,7 +82,7 @@ def load_training_set_and_patch(patch_size, overlap=0, max_nb_images=-1):
 
     return training_patches, groundtruth_patches, overlap_image, nb_patches_per_image
 
-def load_data(path, max_nb_images=-1):
+def load_data_from_dir(path, max_nb_images=-1):
     """Loads images from the directory pointed to by `path`.
     
     The function returns an empty array if any image from the target directory
@@ -95,7 +98,8 @@ def load_data(path, max_nb_images=-1):
     """
 
     # Determine number of images to load
-    training_images = os.listdir(path).sort()
+    training_images = os.listdir(path)
+    training_images.sort()
     nb_training_images = len(training_images) if (max_nb_images < 0) else min(len(training_images), max_nb_images)
 
     # Load the images
@@ -109,6 +113,62 @@ def load_data(path, max_nb_images=-1):
             return np.empty()
 
     return np.asarray(imgs)
+
+def load_additional_dataset(random_selection=False, proportion=1.0):
+    """Loads a (possibly random) set of images and corresponding groundtruths 
+    from the additional dataset.
+    
+    By default the function loads all images contained in the additional dataset.
+    If only `proportion` is specified, then the choice of images is not random and
+    the function will return a deterministic set of image/groundtruth pair.
+      
+    The function returns empty arrays if any selected image could not be loaded, 
+    or if the `proportion` argument is invalid.
+
+    Args:
+        random_selection (bool): Indicates whether the function decides on the set of images to load randomly (False by default).
+        proportion (float): The proportion (between 0 and 1) of the additional dataset to load (1 by default).
+    Returns:
+        N x H x W x Y tensor: A tensor of N RGB(A) training images.
+        N x H x W tensor: A tensor of N black and white groundtruth images corresponding to the training samples.
+    """
+
+    # Check argument
+    if proportion < 0.0 or proportion > 1.0:
+        return np.empty(), np.empty()
+
+    # Look for images in additional dataset folder
+    training_images = os.listdir(ADDITIONAL_TRAINING)
+    training_images.sort()
+    groundtruth_images = os.listdir(ADDITIONAL_GROUNDTRUTH)
+    groundtruth_images.sort()
+    
+    # Return immediately if the number of training images and groundtruth is different
+    if len(training_images) != len(groundtruth_images):
+        return np.empty(), np.empty()
+
+    # Decide on a set of images to select
+    indices = np.arange(len(training_images))
+    if random_selection:
+        indices = np.random.permutation(indices)
+    indices = indices[ : int(proportion * len(training_images)) ]
+
+    # Load the images
+    imgs = []
+    gts = []
+    for i in indices:
+        image_filename = ADDITIONAL_TRAINING + training_images[i]
+        groundtruth_filename = ADDITIONAL_GROUNDTRUTH + groundtruth_images[i]
+
+        if os.path.isfile(image_filename) and os.path.isfile(groundtruth_filename):
+            # Load the image and its corresponding groundtruth
+            imgs.append(mpimg.imread(image_filename))
+            gts.append(mpimg.imread(groundtruth_filename))
+        else:
+            print ('Failed to load ' + image_filename + ', aborting.')
+            return np.empty(), np.empty()
+
+    return np.asarray(imgs), np.asarray(gts)
 
 def load_test_set():
     """Loads all images from the test set.
