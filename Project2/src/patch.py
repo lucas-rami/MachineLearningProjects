@@ -51,7 +51,7 @@ def reconstruct_from_flatten(all_patches, overlap_image, nb_patch_per_image, ove
         H x W (x Y) tensor : The original image reconstructed from the patches.
     """
     reconstructed = []
-    nb_images = len(all_patches) / nb_patch_per_image
+    nb_images = int(len(all_patches) / nb_patch_per_image)
     index_low = 0
     index_high = nb_patch_per_image
 
