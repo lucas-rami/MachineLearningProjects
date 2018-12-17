@@ -57,7 +57,7 @@ def reconstruct_from_flatten(all_patches, overlap_image, nb_patch_per_image, ove
 
     # Reconstruct all images
     for _ in range(nb_images):
-        reconstructed.append(img_reconstruct(all_patches[index_low, index_high], overlap_image, overlap))
+        reconstructed.append(img_reconstruct(all_patches[index_low : index_high], overlap_image, overlap))
         index_low = index_high
         index_high += nb_patch_per_image
     
@@ -183,9 +183,9 @@ def img_reconstruct(patches, overlap_image, overlap=0):
     # Create array for original image
     image = []
     if len(patches[0].shape) == 2:
-        image = np.ndarray(shape=( width, height ))
+        image = np.ndarray(shape=( height, width ))
     else:
-        image = np.ndarray(shape=( width, height, patches[0].shape[2]))
+        image = np.ndarray(shape=( height, width, patches[0].shape[2]))
 
     # Compute the size of a patch taking into account overlap values
     patch_overlapped_size = patch_size - overlap
@@ -197,8 +197,8 @@ def img_reconstruct(patches, overlap_image, overlap=0):
     for i in range(nb_h_patches):
 
         # Determine the vertical bounds
-        h_bound_low = i * patch_size
-        h_bound_high = (i + 1) * patch_size
+        h_bound_low = i * patch_overlapped_size
+        h_bound_high = (i + 1) * patch_overlapped_size
         if i == nb_h_patches - 1:
             h_bound_low = height - patch_size
             h_bound_high = height
@@ -206,8 +206,8 @@ def img_reconstruct(patches, overlap_image, overlap=0):
         for j in range(nb_w_patches):
 
             # Determine the horizontal bounds
-            w_bound_low = j * patch_size
-            w_bound_high = (j + 1) * patch_size
+            w_bound_low = j * patch_overlapped_size
+            w_bound_high = (j + 1) * patch_overlapped_size
             if i == nb_w_patches - 1:
                 w_bound_low = width - patch_size
                 w_bound_high = width
@@ -219,7 +219,7 @@ def img_reconstruct(patches, overlap_image, overlap=0):
             for k in range(h_bound_low, h_bound_high, 1):
                 l_patch = 0
                 for l in range(w_bound_low, w_bound_high, 1):
-                    image[l , k] += patch[k_patch, l_patch]
+                    image[k, l] += patch[k_patch, l_patch]
                     l_patch += 1
                 k_patch += 1
 
