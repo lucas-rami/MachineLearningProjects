@@ -19,7 +19,7 @@ def make_patch_and_flatten(images, patch_size, overlap=0):
     """
 
     # Make patches
-    patches = [img_patch(images[i], patch_size, overlap)[0] for i in range(images)]
+    patches = [img_patch(images[i], patch_size, overlap)[0] for i in range(len(images))]
     # Flatten the array
     patches_flat = [patches[i][j] for i in range(len(patches)) for j in range(len(patches[i]))]
     # Compute number of patches per image
@@ -115,8 +115,8 @@ def img_patch(image, patch_size, overlap=0):
     for i in range(nb_h_patches):
 
         # Determine the vertical bounds
-        h_bound_low = i * patch_size
-        h_bound_high = (i + 1) * patch_size
+        h_bound_low = i * patch_overlapped_size
+        h_bound_high = (i + 1) * patch_overlapped_size
         if i == nb_h_patches - 1:
             h_bound_low = height - patch_size
             h_bound_high = height
@@ -124,8 +124,8 @@ def img_patch(image, patch_size, overlap=0):
         for j in range(nb_w_patches):
 
             # Determine the horizontal bounds
-            w_bound_low = j * patch_size
-            w_bound_high = (j + 1) * patch_size
+            w_bound_low = j * patch_overlapped_size
+            w_bound_high = (j + 1) * patch_overlapped_size
             if i == nb_w_patches - 1:
                 w_bound_low = width - patch_size
                 w_bound_high = width
@@ -139,7 +139,7 @@ def img_patch(image, patch_size, overlap=0):
             # Iterate over each pixel in the patch to fill the overlap_image
             for k in range(h_bound_low, h_bound_high, 1):
                 for l in range(w_bound_low, w_bound_high, 1):
-                    overlap_image[l , k] += 1
+                    overlap_image[k, l] += 1
 
     return np.asarray(patches), overlap_image
 
