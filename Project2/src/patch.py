@@ -116,7 +116,7 @@ def img_patch(image, patch_size, overlap=0):
 
         # Determine the vertical bounds
         h_bound_low = i * patch_overlapped_size
-        h_bound_high = (i + 1) * patch_overlapped_size
+        h_bound_high = h_bound_low + patch_size
         if i == nb_h_patches - 1:
             h_bound_low = height - patch_size
             h_bound_high = height
@@ -125,8 +125,8 @@ def img_patch(image, patch_size, overlap=0):
 
             # Determine the horizontal bounds
             w_bound_low = j * patch_overlapped_size
-            w_bound_high = (j + 1) * patch_overlapped_size
-            if i == nb_w_patches - 1:
+            w_bound_high = w_bound_low + patch_size
+            if j == nb_w_patches - 1:
                 w_bound_low = width - patch_size
                 w_bound_high = width
 
@@ -198,7 +198,7 @@ def img_reconstruct(patches, overlap_image, overlap=0):
 
         # Determine the vertical bounds
         h_bound_low = i * patch_overlapped_size
-        h_bound_high = (i + 1) * patch_overlapped_size
+        h_bound_high = h_bound_low + patch_size
         if i == nb_h_patches - 1:
             h_bound_low = height - patch_size
             h_bound_high = height
@@ -207,8 +207,8 @@ def img_reconstruct(patches, overlap_image, overlap=0):
 
             # Determine the horizontal bounds
             w_bound_low = j * patch_overlapped_size
-            w_bound_high = (j + 1) * patch_overlapped_size
-            if i == nb_w_patches - 1:
+            w_bound_high = w_bound_low + patch_size
+            if j == nb_w_patches - 1:
                 w_bound_low = width - patch_size
                 w_bound_high = width
 
