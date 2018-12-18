@@ -2,8 +2,10 @@
 
 # Functions used to manipulate images
 
-import tensorflow as tf
 import numpy as np
+import scipy.misc as sp
+from helper import *
+from skimage.transform import resize, rotate
 
 def crop_input_image(input_img,height,width):
     '''Crop an image into patches of given height and width.'''
@@ -82,26 +84,26 @@ def convert_to_one_hot(labels):
 
 def resize_imgs(input_imgs, height, width):
     '''Resize images to a given height and width.'''
-    with tf.Session() as sess:
-        resized_imgs = tf.image.resize_images(input_imgs,(height,width)).eval()
+    resized_imgs = []
+    for i in range(len(input_imgs)):
+        resized_imgs.append(resize(input_imgs[i],(height,width)))
+    resized_imgs = np.asarray(resized_imgs)
+    ndimen = len(resized_imgs.shape)
+    if ndimen == 4:
+        if not np.issubdtype(type(resized_imgs[0,0,0,0]), np.float32):
+            for i in range(len(resized_imgs)):
+                resized_imgs[i] = img_uint8_to_float(resized_imgs[i])
+    elif ndimen ==3:
+        if not np.issubdtype(type(resized_imgs[0,0,0]), np.float32):
+            for i in range(len(resized_imgs)):
+                resized_imgs[i] = img_uint8_to_float(resized_imgs[i])
     return resized_imgs
 
 def resize_binary_imgs(input_imgs, height, width, threshold):
     '''Resize groundtruth images to given height and width, with entries 0 or 1
     given by the threshold.'''
-    with tf.Session() as sess:
-        resized_imgs = tf.image.resize_images(input_imgs,(height,width)).eval()
-    bin_imgs = binarize_imgs(resized_imgs, threshold)
-    return bin_imgs
-
-
-def binarize_imgs(imgs, threshold):
-    '''Form mask images from the predictions of the model by quantizing mask
-    entries to 0 or 1 according to the threshold set.'''
-    bin_imgs = np.empty_like(imgs)
-    for i in range(len(imgs)):
-        bin_imgs[i] = (imgs[i] > threshold).astype(np.float32)
-    return bin_imgs
+    resized_imgs = resize_imgs(input_imgs,height,width)
+    return (resized_imgs > threshold).astype(np.float32)
 
 def merge_prediction_imgs(pred_imgs, original_height, original_width):
     '''Merge together prediction patches obtained by cropping the test images.'''
@@ -111,3 +113,10 @@ def merge_prediction_imgs(pred_imgs, original_height, original_width):
         pred_gt.append(merge_test_gt_image(pred_imgs[i:i+4], original_height, original_width))
         i += 4
     return np.asarray(pred_gt)
+
+def rotate_imgs(imgs, angle):
+    '''Rotate images counter-clockwise with a given angle'''
+    rot_imgs = []
+    for i in range(len(imgs)):
+        rot_imgs.append(rotate(imgs[i], angle))
+    return np.asarray(rot_imgs)
