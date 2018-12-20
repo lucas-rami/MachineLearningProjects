@@ -11,7 +11,7 @@ import matplotlib.image as mpimg
 import patch
 
 # ========= FILE PATHS =========
-DATA_DIR = "../../project_files/data/"
+DATA_DIR = "../../../project_files/data/"
 
 TEST_IMAGES_DIR = DATA_DIR + "test_set_images/"
 PROVIDED_DATA_DIR = DATA_DIR + "training/"
@@ -29,6 +29,11 @@ def listdir_nohidden(path):
         if not f.startswith('.'):
             list.append(f)
     return list
+
+def img_uint8_to_float(img):
+    rimg = img - np.min(img)
+    rimg = (rimg / np.max(rimg)).astype(np.float32)
+    return rimg
 
 def load_training_data_and_patch(path, patch_size, random_selection=False, proportion=1.0, overlap=0):
     """Loads a (possibly random) set of images and corresponding groundtruths
@@ -116,8 +121,8 @@ def load_training_data(path, random_selection=False, proportion=1.0):
 
         if os.path.isfile(image_filename) and os.path.isfile(groundtruth_filename):
             # Load the image and its corresponding groundtruth
-            imgs.append(mpimg.imread(image_filename))
-            gts.append(mpimg.imread(groundtruth_filename))
+            imgs.append(img_uint8_to_float(mpimg.imread(image_filename)))
+            gts.append(img_uint8_to_float(mpimg.imread(groundtruth_filename)))
         else:
             print ('Failed to load ' + image_filename + ', aborting.')
             return np.empty(), np.empty()

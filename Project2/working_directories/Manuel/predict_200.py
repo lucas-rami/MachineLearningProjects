@@ -91,7 +91,7 @@ predictions_bin = (predictions > best_thr).astype(int)
 
 resize_threshold = 0.25
 resized_predictions = resize_binary_imgs(predictions_bin, 38,38, resize_threshold)
-plt.imshow(predictions_bin[5])
+plt.imshow(predictions_bin[0])
 plt.imshow(resized_predictions[5])
 
 

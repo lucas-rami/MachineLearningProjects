@@ -183,9 +183,9 @@ def img_reconstruct(patches, overlap_image, overlap=0):
     # Create array for original image
     image = []
     if len(patches[0].shape) == 2:
-        image = np.ndarray(shape=( width, height ))
+        image = np.zeros(shape=( width, height ))
     else:
-        image = np.ndarray(shape=( width, height, patches[0].shape[2]))
+        image = np.zeros(shape=( width, height, patches[0].shape[2]))
 
     # Compute the size of a patch taking into account overlap values
     patch_overlapped_size = patch_size - overlap

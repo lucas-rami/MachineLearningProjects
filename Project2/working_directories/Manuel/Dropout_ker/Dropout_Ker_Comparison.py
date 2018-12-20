@@ -158,52 +158,116 @@ hist_09_5 = pickle.load(file)
 file.close()
 
 fig_Ker1, ax_Ker1 = plt.subplots( nrows=1, ncols=1 )  # create figure & 1 axis
-model_01_Ker1, = ax_Ker1.plot(hist_01['val_f1_score'], label='0.1')
-model_02_Ker1, = ax_Ker1.plot(hist_02['val_f1_score'], label='0.2')
-model_03_Ker1, = ax_Ker1.plot(hist_03['val_f1_score'], label='0.3')
-model_04_Ker1, = ax_Ker1.plot(hist_04['val_f1_score'], label='0.4')
-model_05_Ker1, = ax_Ker1.plot(hist_05['val_f1_score'], label='0.5')
-model_06_Ker1, = ax_Ker1.plot(hist_06['val_f1_score'], label='0.6')
-model_07_Ker1, = ax_Ker1.plot(hist_07['val_f1_score'], label='0.7')
-model_08_Ker1, = ax_Ker1.plot(hist_08['val_f1_score'], label='0.8')
-model_09_Ker1, = ax_Ker1.plot(hist_09['val_f1_score'], label='0.9')
-plt.ylabel('F1 score')
-plt.xlabel('Epochs')
-plt.legend(handles=[model_01,model_02,model_03,model_04,model_05,model_06,model_07,model_08,model_09])
-plt.show()
-fig.savefig('dropout_f1.pdf', bbox_inches='tight')   # save the figure to file
-plt.close(fig)
-
-fig2, ax2 = plt.subplots( nrows=1, ncols=1 )  # create figure & 1 axis
-model_01, = ax2.plot(hist_01['val_acc'], label='0.1')
-model_02, = ax2.plot(hist_02['val_acc'], label='0.2')
-model_03, = ax2.plot(hist_03['val_acc'], label='0.3')
-model_04, = ax2.plot(hist_04['val_acc'], label='0.4')
-model_05, = ax2.plot(hist_05['val_acc'], label='0.5')
-model_06, = ax2.plot(hist_06['val_acc'], label='0.6')
-model_07, = ax2.plot(hist_07['val_acc'], label='0.7')
-model_08, = ax2.plot(hist_08['val_acc'], label='0.8')
-model_09, = ax2.plot(hist_09['val_acc'], label='0.9')
-plt.ylabel('Accuracy')
-plt.xlabel('Epochs')
-plt.legend(handles=[model_01,model_02,model_03,model_04,model_05,model_06,model_07,model_08,model_09])
-plt.show()
-fig2.savefig('dropout_acc.pdf', bbox_inches='tight')   # save the figure to file
-plt.close(fig2)
-
-fig3, ax3 = plt.subplots( nrows=1, ncols=1 )  # create figure & 1 axis
-model_01, = ax3.plot(hist_01['val_loss'], label='0.1')
-model_02, = ax3.plot(hist_02['val_loss'], label='0.2')
-model_03, = ax3.plot(hist_03['val_loss'], label='0.3')
-model_04, = ax3.plot(hist_04['val_loss'], label='0.4')
-model_05, = ax3.plot(hist_05['val_loss'], label='0.5')
-model_06, = ax3.plot(hist_06['val_loss'], label='0.6')
-model_07, = ax3.plot(hist_07['val_loss'], label='0.7')
-model_08, = ax3.plot(hist_08['val_loss'], label='0.8')
-model_09, = ax3.plot(hist_09['val_loss'], label='0.9')
+model_01_Ker1, = ax_Ker1.plot(hist_01_1['val_loss'], label='0.1')
+model_02_Ker1, = ax_Ker1.plot(hist_02_1['val_loss'], label='0.2')
+model_03_Ker1, = ax_Ker1.plot(hist_03_1['val_loss'], label='0.3')
+model_04_Ker1, = ax_Ker1.plot(hist_04_1['val_loss'], label='0.4')
+model_05_Ker1, = ax_Ker1.plot(hist_05_1['val_loss'], label='0.5')
+model_06_Ker1, = ax_Ker1.plot(hist_06_1['val_loss'], label='0.6')
+model_07_Ker1, = ax_Ker1.plot(hist_07_1['val_loss'], label='0.7')
+model_08_Ker1, = ax_Ker1.plot(hist_08_1['val_loss'], label='0.8')
+model_09_Ker1, = ax_Ker1.plot(hist_09_1['val_loss'], label='0.9')
 plt.ylabel('Loss')
 plt.xlabel('Epochs')
-plt.legend(handles=[model_01,model_02,model_03,model_04,model_05,model_06,model_07,model_08,model_09])
+plt.legend(handles=[model_01_Ker1,model_02_Ker1,model_03_Ker1,model_04_Ker1,model_05_Ker1,model_06_Ker1,model_07_Ker1,model_08_Ker1,model_09_Ker1])
 plt.show()
-fig3.savefig('dropout_loss.pdf', bbox_inches='tight')   # save the figure to file
-plt.close(fig3)
+fig_Ker1.savefig('Dropout_Ker1_loss.pdf', bbox_inches='tight')   # save the figure to file
+plt.close(fig_Ker1)
+
+fig_Ker2, ax_Ker2 = plt.subplots( nrows=1, ncols=1 )  # create figure & 1 axis
+model_01_Ker2, = ax_Ker2.plot(hist_01_2['val_loss'], label='0.1')
+model_02_Ker2, = ax_Ker2.plot(hist_02_2['val_loss'], label='0.2')
+model_03_Ker2, = ax_Ker2.plot(hist_03_2['val_loss'], label='0.3')
+model_04_Ker2, = ax_Ker2.plot(hist_04_2['val_loss'], label='0.4')
+model_05_Ker2, = ax_Ker2.plot(hist_05_2['val_loss'], label='0.5')
+model_06_Ker2, = ax_Ker2.plot(hist_06_2['val_loss'], label='0.6')
+model_07_Ker2, = ax_Ker2.plot(hist_07_2['val_loss'], label='0.7')
+model_08_Ker2, = ax_Ker2.plot(hist_08_2['val_loss'], label='0.8')
+model_09_Ker2, = ax_Ker2.plot(hist_09_2['val_loss'], label='0.9')
+plt.ylabel('Loss')
+plt.xlabel('Epochs')
+plt.legend(handles=[model_01_Ker2,model_02_Ker2,model_03_Ker2,model_04_Ker2,model_05_Ker2,model_06_Ker2,model_07_Ker2,model_08_Ker2,model_09_Ker2])
+plt.show()
+fig_Ker2.savefig('Dropout_Ker2_loss.pdf', bbox_inches='tight')   # save the figure to file
+plt.close(fig_Ker2)
+
+fig_Ker3, ax_Ker3 = plt.subplots( nrows=1, ncols=1 )  # create figure & 1 axis
+model_01_Ker3, = ax_Ker3.plot(hist_01_3['val_loss'], label='0.1')
+model_02_Ker3, = ax_Ker3.plot(hist_02_3['val_loss'], label='0.2')
+model_03_Ker3, = ax_Ker3.plot(hist_03_3['val_loss'], label='0.3')
+model_04_Ker3, = ax_Ker3.plot(hist_04_3['val_loss'], label='0.4')
+model_05_Ker3, = ax_Ker3.plot(hist_05_3['val_loss'], label='0.5')
+model_06_Ker3, = ax_Ker3.plot(hist_06_3['val_loss'], label='0.6')
+model_07_Ker3, = ax_Ker3.plot(hist_07_3['val_loss'], label='0.7')
+model_08_Ker3, = ax_Ker3.plot(hist_08_3['val_loss'], label='0.8')
+model_09_Ker3, = ax_Ker3.plot(hist_09_3['val_loss'], label='0.9')
+plt.ylabel('Loss')
+plt.xlabel('Epochs')
+plt.legend(handles=[model_01_Ker3,model_02_Ker3,model_03_Ker3,model_04_Ker3,model_05_Ker3,model_06_Ker3,model_07_Ker3,model_08_Ker3,model_09_Ker3])
+plt.show()
+fig_Ker3.savefig('Dropout_Ker3_loss.pdf', bbox_inches='tight')   # save the figure to file
+plt.close(fig_Ker3)
+
+fig_Ker4, ax_Ker4 = plt.subplots( nrows=1, ncols=1 )  # create figure & 1 axis
+model_01_Ker4, = ax_Ker4.plot(hist_01_4['val_loss'], label='0.1')
+model_02_Ker4, = ax_Ker4.plot(hist_02_4['val_loss'], label='0.2')
+model_03_Ker4, = ax_Ker4.plot(hist_03_4['val_loss'], label='0.3')
+model_04_Ker4, = ax_Ker4.plot(hist_04_4['val_loss'], label='0.4')
+model_05_Ker4, = ax_Ker4.plot(hist_05_4['val_loss'], label='0.5')
+model_06_Ker4, = ax_Ker4.plot(hist_06_4['val_loss'], label='0.6')
+model_07_Ker4, = ax_Ker4.plot(hist_07_4['val_loss'], label='0.7')
+model_08_Ker4, = ax_Ker4.plot(hist_08_4['val_loss'], label='0.8')
+model_09_Ker4, = ax_Ker4.plot(hist_09_4['val_loss'], label='0.9')
+plt.ylabel('Loss')
+plt.xlabel('Epochs')
+plt.legend(handles=[model_01_Ker4,model_02_Ker4,model_03_Ker4,model_04_Ker4,model_05_Ker4,model_06_Ker4,model_07_Ker4,model_08_Ker4,model_09_Ker4])
+plt.show()
+fig_Ker4.savefig('Dropout_Ker4_loss.pdf', bbox_inches='tight')   # save the figure to file
+plt.close(fig_Ker4)
+
+fig_Ker5, ax_Ker5 = plt.subplots( nrows=1, ncols=1 )  # create figure & 1 axis
+model_01_Ker5, = ax_Ker5.plot(hist_01_5['val_loss'], label='0.1')
+model_02_Ker5, = ax_Ker5.plot(hist_02_5['val_loss'], label='0.2')
+model_03_Ker5, = ax_Ker5.plot(hist_03_5['val_loss'], label='0.3')
+model_04_Ker5, = ax_Ker5.plot(hist_04_5['val_loss'], label='0.4')
+model_05_Ker5, = ax_Ker5.plot(hist_05_5['val_loss'], label='0.5')
+model_06_Ker5, = ax_Ker5.plot(hist_06_5['val_loss'], label='0.6')
+model_07_Ker5, = ax_Ker5.plot(hist_07_5['val_loss'], label='0.7')
+model_08_Ker5, = ax_Ker5.plot(hist_08_5['val_loss'], label='0.8')
+model_09_Ker5, = ax_Ker5.plot(hist_09_5['val_loss'], label='0.9')
+plt.ylabel('Loss')
+plt.xlabel('Epochs')
+plt.legend(handles=[model_01_Ker5,model_02_Ker5,model_03_Ker5,model_04_Ker5,model_05_Ker5,model_06_Ker5,model_07_Ker5,model_08_Ker5,model_09_Ker5])
+plt.show()
+fig_Ker5.savefig('Dropout_Ker5_loss.pdf', bbox_inches='tight')   # save the figure to file
+plt.close(fig_Ker5)
+
+hist_best_1 = hist_02_1['val_loss']
+hist_best_2 = hist_03_2['val_loss']
+hist_best_3 = hist_04_3['val_loss']
+hist_best_4 = hist_04_4['val_loss']
+hist_best_5 = hist_04_5['val_loss']
+loss_ker = []
+loss_ker_err = []
+loss_ker.append(np.mean(hist_best_1[-10:]))
+loss_ker_err.append(np.std(hist_best_1[-10:])/len(hist_best_1[-10:]))
+loss_ker.append(np.mean(hist_best_2[-10:]))
+loss_ker_err.append(np.std(hist_best_2[-10:])/len(hist_best_2[-10:]))
+loss_ker.append(np.mean(hist_best_3[-10:]))
+loss_ker_err.append(np.std(hist_best_3[-10:])/len(hist_best_3[-10:]))
+loss_ker.append(np.mean(hist_best_4[-10:]))
+loss_ker_err.append(np.std(hist_best_4[-10:])/len(hist_best_4[-10:]))
+loss_ker.append(np.mean(hist_best_5[-10:]))
+loss_ker_err.append(np.std(hist_best_5[-10:])/len(hist_best_5[-10:]))
+
+loss_ker_err = np.asarray(loss_ker_err)
+
+ker_size = [1,2,3,4,5]
+
+fig_Kers, ax_Kers = plt.subplots( nrows=1, ncols=1 )
+ax_Kers.errorbar(ker_size,loss_ker,yerr=loss_ker_err, marker="x")
+plt.ylabel('Loss')
+plt.xlabel('kernel size')
+plt.show()
+fig_Kers.savefig('Loss_kers.pdf', bbox_inches='tight')   # save the figure to file
+plt.close(fig_Kers)

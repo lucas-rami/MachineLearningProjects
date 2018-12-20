@@ -23,7 +23,7 @@ def make_patch_and_flatten(images, patch_size, overlap=0):
     # Flatten the array
     patches_flat = [patches[i][j] for i in range(len(patches)) for j in range(len(patches[i]))]
     # Compute number of patches per image
-    nb_patch_per_image = len(patches_flat) / len(images)
+    nb_patch_per_image = int(len(patches_flat) / len(images))
     # Get the overlap image
     _, overlap_image = img_patch(images[0], patch_size, overlap)
     # Return
@@ -51,13 +51,13 @@ def reconstruct_from_flatten(all_patches, overlap_image, nb_patch_per_image, ove
         H x W (x Y) tensor : The original image reconstructed from the patches.
     """
     reconstructed = []
-    nb_images = len(all_patches) / nb_patch_per_image
+    nb_images = int(len(all_patches) / nb_patch_per_image)
     index_low = 0
     index_high = nb_patch_per_image
 
     # Reconstruct all images
     for _ in range(nb_images):
-        reconstructed.append(img_reconstruct(all_patches[index_low, index_high], overlap_image, overlap))
+        reconstructed.append(img_reconstruct(all_patches[index_low : index_high], overlap_image, overlap))
         index_low = index_high
         index_high += nb_patch_per_image
 
@@ -106,8 +106,9 @@ def img_patch(image, patch_size, overlap=0):
     patch_overlapped_size = patch_size - overlap
 
     # Compute number of horizontal/vertical patches
-    nb_h_patches = int(height / patch_overlapped_size) - (1 if height % patch_overlapped_size == 0 else 0)
-    nb_w_patches = int(width / patch_overlapped_size) - (1 if width % patch_overlapped_size == 0 else 0)
+    nb_h_patches = int((height - overlap) / patch_overlapped_size) + (1 if height % patch_overlapped_size != 0 else 0)
+    nb_w_patches = int((width - overlap) / patch_overlapped_size) + (1 if width % patch_overlapped_size != 0 else 0)
+    # print("Number of patches: [" + str(nb_h_patches) + " , " + str(nb_w_patches) + "]")
 
     # Generate patches and overlap image
     overlap_image = np.zeros(shape=(height,width), dtype=int)
@@ -115,8 +116,8 @@ def img_patch(image, patch_size, overlap=0):
     for i in range(nb_h_patches):
 
         # Determine the vertical bounds
-        h_bound_low = i * patch_size
-        h_bound_high = (i + 1) * patch_size
+        h_bound_low = i * patch_overlapped_size
+        h_bound_high = h_bound_low + patch_size
         if i == nb_h_patches - 1:
             h_bound_low = height - patch_size
             h_bound_high = height
@@ -124,11 +125,13 @@ def img_patch(image, patch_size, overlap=0):
         for j in range(nb_w_patches):
 
             # Determine the horizontal bounds
-            w_bound_low = j * patch_size
-            w_bound_high = (j + 1) * patch_size
-            if i == nb_w_patches - 1:
+            w_bound_low = j * patch_overlapped_size
+            w_bound_high = w_bound_low + patch_size
+            if j == nb_w_patches - 1:
                 w_bound_low = width - patch_size
                 w_bound_high = width
+
+            # print("Height/Width bounds = [" + str(h_bound_low) + " , " + str(h_bound_high) + "] , [" + str(w_bound_low) + " , " + str(w_bound_high) + "]")
 
             # Create new patch
             if len(image.shape) == 2:
@@ -139,7 +142,7 @@ def img_patch(image, patch_size, overlap=0):
             # Iterate over each pixel in the patch to fill the overlap_image
             for k in range(h_bound_low, h_bound_high, 1):
                 for l in range(w_bound_low, w_bound_high, 1):
-                    overlap_image[l , k] += 1
+                    overlap_image[k, l] += 1
 
     return np.asarray(patches), overlap_image
 
@@ -183,22 +186,22 @@ def img_reconstruct(patches, overlap_image, overlap=0):
     # Create array for original image
     image = []
     if len(patches[0].shape) == 2:
-        image = np.ndarray(shape=( width, height ))
+        image = np.zeros(shape=( height, width ))
     else:
-        image = np.ndarray(shape=( width, height, patches[0].shape[2]))
+        image = np.zeros(shape=( height, width, patches[0].shape[2]))
 
     # Compute the size of a patch taking into account overlap values
     patch_overlapped_size = patch_size - overlap
 
     # Compute number of horizontal/vertical patches
-    nb_h_patches = int(height / patch_overlapped_size) - (1 if height % patch_overlapped_size == 0 else 0)
-    nb_w_patches = int(width / patch_overlapped_size) - (1 if width % patch_overlapped_size == 0 else 0)
+    nb_h_patches = int((height - overlap) / patch_overlapped_size) + (1 if height % patch_overlapped_size != 0 else 0)
+    nb_w_patches = int((width - overlap) / patch_overlapped_size) + (1 if width % patch_overlapped_size != 0 else 0)
 
     for i in range(nb_h_patches):
 
         # Determine the vertical bounds
-        h_bound_low = i * patch_size
-        h_bound_high = (i + 1) * patch_size
+        h_bound_low = i * patch_overlapped_size
+        h_bound_high = h_bound_low + patch_size
         if i == nb_h_patches - 1:
             h_bound_low = height - patch_size
             h_bound_high = height
@@ -206,9 +209,9 @@ def img_reconstruct(patches, overlap_image, overlap=0):
         for j in range(nb_w_patches):
 
             # Determine the horizontal bounds
-            w_bound_low = j * patch_size
-            w_bound_high = (j + 1) * patch_size
-            if i == nb_w_patches - 1:
+            w_bound_low = j * patch_overlapped_size
+            w_bound_high = w_bound_low + patch_size
+            if j == nb_w_patches - 1:
                 w_bound_low = width - patch_size
                 w_bound_high = width
 
@@ -219,7 +222,7 @@ def img_reconstruct(patches, overlap_image, overlap=0):
             for k in range(h_bound_low, h_bound_high, 1):
                 l_patch = 0
                 for l in range(w_bound_low, w_bound_high, 1):
-                    image[l , k] += patch[k_patch, l_patch]
+                    image[k, l] += patch[k_patch, l_patch]
                     l_patch += 1
                 k_patch += 1
 

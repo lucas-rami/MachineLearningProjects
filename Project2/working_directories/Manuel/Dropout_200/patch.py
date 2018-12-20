@@ -7,7 +7,7 @@ MIN_PATCH_SIZE = 16
 
 def make_patch_and_flatten(images, patch_size, overlap=0):
     """Splits all images from an array into patches, and flattens the resulting array.
-
+    
     Args:
         images (N x H x W (x Y) tensor): An array of images.
         patch_size (int): The patch size to use to make patches out of the images.
@@ -60,7 +60,7 @@ def reconstruct_from_flatten(all_patches, overlap_image, nb_patch_per_image, ove
         reconstructed.append(img_reconstruct(all_patches[index_low : index_high], overlap_image, overlap))
         index_low = index_high
         index_high += nb_patch_per_image
-
+    
     return np.asarray(reconstructed)
 
 def img_patch(image, patch_size, overlap=0):
@@ -167,6 +167,7 @@ def img_reconstruct(patches, overlap_image, overlap=0):
     Returns:
         H x W (x Y) tensor : The original image reconstructed from the patches.
     """
+
     # Derive patch size and original width and height from arguments
     patch_size = patches[0].shape[0]
     height = overlap_image.shape[0]
@@ -185,9 +186,9 @@ def img_reconstruct(patches, overlap_image, overlap=0):
     # Create array for original image
     image = []
     if len(patches[0].shape) == 2:
-        image = np.zeros(shape=( height, width ))
+        image = np.ndarray(shape=( height, width ))
     else:
-        image = np.zeros(shape=( height, width, patches[0].shape[2]))
+        image = np.ndarray(shape=( height, width, patches[0].shape[2]))
 
     # Compute the size of a patch taking into account overlap values
     patch_overlapped_size = patch_size - overlap
