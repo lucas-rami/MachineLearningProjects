@@ -8,11 +8,14 @@
 
 ## Installing the Additional Dataset
 
-We leveraged an additional dataset found online (see report for details) to train our models.
+We leveraged an additional dataset found online (see report for details) to train our models. You need to download this dataset in order to run our training scripts (if needed).
 
 To install the additional dataset follow the following link https://drive.google.com/drive/folders/1dG17dy5RVQd-0nBu54FaMCqU5RFnQOIr?usp=sharing and download the `additionalDatasetSel.zip` archive. You then need to extract the archive under `data/` so that the satellite images and groundtruth are stored respectively under `data/additionalDatasetSel/images/` and `data/additionalDatasetSel/groundtruth/`.
 
+
 ## Running our Code
+
+**WARNING: You need to be in the `scripts/` folder to correctly execute our scripts because they contain relative paths to other parts of the program.**
 
 Our main script is located under `scripts/run.py`. It leverages our combined model approach to the road segmentation problem (see report for details). Our submission already contains the trained models for our *Narrow Mapped U-Net* model and *Fully Spatial U-Net* model under `models/output/` so the script doesn't need to re-train the models before generating its predictions (the script can still take a lot of time to run beause it looks for an optimal combination of the 2 models and an optimal threshold to separate the roads from the rest of the image). The predictions are then stored under `submissions/combined_model.csv`.
 
@@ -25,10 +28,10 @@ However, we left the possibility to re-train any of the two basic models when ru
 
 Examples:
 
-* `python scripts/run.py :` generates the predictions without re-training anything.
-* `python scripts/run.py train:` re-trains the *Narrow Mapped U-Net* model.
-* `python scripts/run.py train train:` re-trains both models.
-* `python scripts/run.py anything train:` re-trains the *Fully Spatial U-Net* model.
+* `python run.py :` generates the predictions without re-training anything.
+* `python run.py train:` re-trains the *Narrow Mapped U-Net* model.
+* `python run.py train train:` re-trains both models.
+* `python run.py anything train:` re-trains the *Fully Spatial U-Net* model.
 
 A detailed description of our other scripts is provided in the following section.
 
