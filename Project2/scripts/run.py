@@ -12,7 +12,7 @@ import unet_patch_200_rot
 import predict_combined
 
 # Check the number of arguments
-if len(sys.argv > 3):
+if len(sys.argv) > 3:
     print("Too many arguments. See README.md.")
     sys.exit()
 
@@ -22,9 +22,12 @@ run_train_200 = False if len(sys.argv) < 3 else (True if sys.argv[2] == "train" 
 
 # Run training if requested
 if run_train_120:
+    print("=== Training Narrow-Mapped U-Net === ")
     unet_patch_120_rot.main()
 if run_train_200:
+    print("=== Training Fully Spatial U-Net ===")
     unet_patch_200_rot.main()
 
 # Run predictions
+print("=== Generating predictions for combined model ===")
 predict_combined.main()
