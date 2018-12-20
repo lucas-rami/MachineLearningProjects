@@ -1,6 +1,5 @@
 #-*- coding: utf-8 -*-
-
-# Functions used to manipulate images
+"""UNET for script unet_patch_2OO_rot.py."""
 
 import numpy as np
 import keras

@@ -1,33 +1,32 @@
 #-*- coding: utf-8 -*-
-
-# Functions used to manipulate images
+"""UNET for script unet_patch_2OO_rot.py."""
 
 import numpy as np
-import tensorflow as tf
 import keras
-from keras.models import *
-from keras.layers import *
-from keras.regularizers import *
+from keras.models import Model
+from keras.layers import Conv2D, Dropout, MaxPooling2D, Conv2DTranspose, concatenate, BatchNormalization, Activation
 from keras.callbacks import EarlyStopping, ModelCheckpoint, ReduceLROnPlateau
 from keras.optimizers import Adam
 
 def conv2d_block(input_tensor, n_filters, kernel_size=3, batchnorm=True):
-    # first layer
+    # First layer
     x = Conv2D(filters=n_filters, kernel_size=(kernel_size, kernel_size), kernel_initializer="he_normal",
                padding="same")(input_tensor)
     if batchnorm:
         x = BatchNormalization()(x)
     x = Activation("relu")(x)
-    # second layer
+
+    # Second layer
     x = Conv2D(filters=n_filters, kernel_size=(kernel_size, kernel_size), kernel_initializer="he_normal",
                padding="same")(x)
     if batchnorm:
         x = BatchNormalization()(x)
     x = Activation("relu")(x)
+
     return x
 
-def get_unet(input_img, num_classes, n_filters=16, dropout=0.5, batchnorm=True):
-    # contracting path
+def get_unet_200(input_img, num_classes, n_filters=16, dropout=0.5, batchnorm=True):
+    # Contracting path
     c1 = conv2d_block(input_img, n_filters=n_filters*1, kernel_size=3, batchnorm=batchnorm)
     p1 = MaxPooling2D((2, 2)) (c1)
     p1 = Dropout(dropout*0.5)(p1)
@@ -46,7 +45,7 @@ def get_unet(input_img, num_classes, n_filters=16, dropout=0.5, batchnorm=True):
 
     c5 = conv2d_block(p4, n_filters=n_filters*16, kernel_size=3, batchnorm=batchnorm)
 
-    # expansive path
+    # Expansive path
     u6 = Conv2DTranspose(n_filters*8, (3, 3), strides=(5, 5), padding='same') (c5)
     u6 = concatenate([u6, c4])
     u6 = Dropout(dropout)(u6)
@@ -70,16 +69,3 @@ def get_unet(input_img, num_classes, n_filters=16, dropout=0.5, batchnorm=True):
     outputs = Conv2D(num_classes, (1, 1), activation='sigmoid') (c9)
     model = Model(inputs=[input_img], outputs=[outputs])
     return model
-
-def f1_score(y_true, y_pred):
-    y_true = tf.cast(y_true, "int32")
-    y_pred = tf.cast(tf.round(y_pred), "int32") # implicit 0.5 threshold via tf.round
-    y_correct = y_true * y_pred
-    sum_true = tf.reduce_sum(y_true, axis=1)
-    sum_pred = tf.reduce_sum(y_pred, axis=1)
-    sum_correct = tf.reduce_sum(y_correct, axis=1)
-    precision = sum_correct / sum_pred
-    recall = sum_correct / sum_true
-    f_score = 2 * precision * recall / (precision + recall)
-    f_score = tf.where(tf.is_nan(f_score), tf.zeros_like(f_score), f_score)
-    return tf.reduce_mean(f_score)

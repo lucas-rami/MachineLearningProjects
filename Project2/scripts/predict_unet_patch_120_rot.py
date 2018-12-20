@@ -19,7 +19,7 @@ import numpy as np
 from keras.layers import Input
 
 # Name of output file (in ../models/output/) where the model's weight will be stored
-OUTPUT_NAME = 'UNET_patch_120_rot'
+OUTPUT_NAME = 'unet_patch_120_rot'
 
 # Size of patches to split images
 PATCH_SIZE = 120
