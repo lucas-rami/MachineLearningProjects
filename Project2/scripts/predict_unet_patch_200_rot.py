@@ -60,7 +60,7 @@ val_gt_patches = np.expand_dims(val_gt_patches,axis=3)
 
 # Resize validation images and groundtruth
 resized_val_imgs = transformation.imgs_resize(val_patches, PATCH_SIZE, PATCH_SIZE)
-resized_val_gts = transformation.groundtruth_resize(val_gt_patches, PATCH_SIZE, PATCH_SIZE, RESIZE_THRESHOLD)
+resized_val_gts = transformation.groundtruth_resize(val_gt_patches.astype(float), PATCH_SIZE, PATCH_SIZE, RESIZE_THRESHOLD)
 
 # Make sure that groundtruths are filled with only 0's and 1's
 resized_val_gts = (resized_val_gts > 0.5).astype(int)

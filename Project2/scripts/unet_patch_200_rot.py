@@ -66,8 +66,8 @@ def main(argv=None):
     # Resize everything
     resized_imgs = transformation.imgs_resize(imgs, RESIZE_HEIGHT, RESIZE_WIDTH)
     resized_rot_imgs = transformation.imgs_resize(rot_imgs, RESIZE_HEIGHT, RESIZE_WIDTH)
-    resized_gt_imgs = transformation.groundtruth_resize(gt_imgs, RESIZE_HEIGHT, RESIZE_WIDTH, THRESHOLD_GT_RESIZE)
-    resized_rot_gt_imgs = transformation.groundtruth_resize(rot_gt_imgs, RESIZE_HEIGHT, RESIZE_WIDTH, THRESHOLD_GT_RESIZE)
+    resized_gt_imgs = transformation.groundtruth_resize((gt_imgs).astype(float), RESIZE_HEIGHT, RESIZE_WIDTH, THRESHOLD_GT_RESIZE)
+    resized_rot_gt_imgs = transformation.groundtruth_resize((rot_gt_imgs).astype(float), RESIZE_HEIGHT, RESIZE_WIDTH, THRESHOLD_GT_RESIZE)
 
     # Concatenate normal images with rotated images
     all_train_imgs = np.append(resized_imgs, resized_rot_imgs, axis=0)
@@ -87,8 +87,8 @@ def main(argv=None):
     # Resize everything
     resized_val_imgs = transformation.imgs_resize(val_imgs, RESIZE_HEIGHT, RESIZE_WIDTH)
     resized_rot_val_imgs = transformation.imgs_resize(rot_val_imgs, RESIZE_HEIGHT, RESIZE_WIDTH)
-    resized_val_gt_imgs = transformation.groundtruth_resize(val_gt_imgs, RESIZE_HEIGHT, RESIZE_WIDTH, THRESHOLD_GT_RESIZE)
-    resized_rot_val_gt_imgs = transformation.groundtruth_resize(rot_val_gt_imgs, RESIZE_HEIGHT, RESIZE_WIDTH, THRESHOLD_GT_RESIZE)
+    resized_val_gt_imgs = transformation.groundtruth_resize(val_gt_imgs.astype(float), RESIZE_HEIGHT, RESIZE_WIDTH, THRESHOLD_GT_RESIZE)
+    resized_rot_val_gt_imgs = transformation.groundtruth_resize(rot_val_gt_imgs.astype(float), RESIZE_HEIGHT, RESIZE_WIDTH, THRESHOLD_GT_RESIZE)
 
     # Concatenate normal validation images with rotated validation images
     all_val_imgs = np.append(resized_val_imgs, resized_rot_val_imgs,axis=0)
@@ -136,7 +136,7 @@ def main(argv=None):
 
     # ================== TRAIN THE MODEL ==================
     print("Training the model...")
-    model_train = model.fit(all_imgs, all_gts, batch_size=BATCH_SIZE, epochs=EPOCHS,
+    _ = model.fit(all_imgs, all_gts, batch_size=BATCH_SIZE, epochs=EPOCHS,
                     callbacks=callbacks, verbose=1, validation_data=(all_val_imgs, all_val_gts))
 
     # ================== SAVE THE MODEL ==================

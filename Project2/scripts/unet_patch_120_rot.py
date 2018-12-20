@@ -115,7 +115,7 @@ def main(argv=None):
 
     # ================== TRAIN THE MODEL ==================
     print("Training the model...")
-    model_train = model.fit(all_imgs, all_gts, batch_size=BATCH_SIZE, epochs=EPOCHS, 
+    _ = model.fit(all_imgs, all_gts, batch_size=BATCH_SIZE, epochs=EPOCHS, 
                     callbacks=callbacks, verbose=1, validation_data=(all_val_imgs, all_val_gts))
 
     # ================== SAVE THE MODEL ==================

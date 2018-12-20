@@ -89,7 +89,7 @@ def main(argv=None):
 
     # Resize images and groundtruths
     resized_val_imgs = transformation.imgs_resize(val_imgs, PATCH_SIZE_200, PATCH_SIZE_200)
-    resized_val_gts = transformation.groundtruth_resize(val_gts, PATCH_SIZE_200, PATCH_SIZE_200, RESIZE_THRESHOLD)
+    resized_val_gts = transformation.groundtruth_resize((val_gts).astype(float), PATCH_SIZE_200, PATCH_SIZE_200, RESIZE_THRESHOLD)
 
     # Load second model
     print("Loading model " + OUTPUT_NAME_200)
