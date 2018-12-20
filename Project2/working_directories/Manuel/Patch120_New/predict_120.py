@@ -1,5 +1,9 @@
 #!/usr/bin/env python3
 
+# Removing warnings
+import warnings
+warnings.filterwarnings("ignore")
+
 import matplotlib.image as mpimg
 import numpy as np
 import tensorflow as tf
