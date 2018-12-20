@@ -66,3 +66,13 @@ A detailed description of our other scripts is provided in the following section
   * **`transformation.py` :** Transform images in different ways to augment the dataset.
 
 * **`submissions/` :** Directory where all submission files are stored.
+
+## Project Dependencies
+
+* `pip install tensorflow`
+* `pip install keras`
+* `pip install numpy`
+* `pip install matplotlib`
+* `pip install scipy`
+* `pip install Pillow`
+* `pip install scikit-image`
