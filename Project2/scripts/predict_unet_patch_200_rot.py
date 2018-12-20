@@ -22,7 +22,7 @@ from keras.layers import Input
 np.random.seed(1)
 
 # Name of output file (in ../models/output/) where the model's weight will be stored
-OUTPUT_NAME = 'unet_patch_120_rot'
+OUTPUT_NAME = 'unet_patch_200_rot'
 
 # Size of patches to split images
 PATCH_SIZE = 200
