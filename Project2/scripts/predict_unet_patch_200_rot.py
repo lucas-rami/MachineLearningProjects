@@ -1,134 +1,109 @@
 #!/usr/bin/env python3
 
-# Removing warnings
-import warnings
-warnings.filterwarnings("ignore")
+#-*- coding: utf-8 -*-
+"""Predictions for `unet_path_200_rot.py`."""
 
-import matplotlib.image as mpimg
-import numpy as np
-import tensorflow as tf
-import matplotlib.pyplot as plt
-import scipy.misc as sp
-import os,sys
-from PIL import Image
-from helper import *
-import keras
-import random
-from keras.models import *
-from keras.layers import *
-from keras.regularizers import *
-from keras.callbacks import EarlyStopping, ModelCheckpoint, ReduceLROnPlateau
-from keras.optimizers import Adam
-import re
-import patch
+# API
+import sys
+sys.path.append("../src")
+sys.path.append("../models")
 import load
-import transformation as tr
-from modelCNN_200 import *
-from shutil import copyfile
-import math
-import submission as sub
+import patch
+import submission
+import transformation
+from definitions.unet_200 import get_unet_200
+from score import f1_custom
 
-def f1_custom(labels, preds):
-    true_positives = np.sum(labels*preds)
-    try:
-        precision = true_positives / np.sum(preds)
-        recall = true_positives / np.sum(labels)
-        f1 = 2 * precision * recall / (precision + recall)
-    except ZeroDivisionError:
-        return 0.0
-    return f1
+# External libraries
+import numpy as np
+from keras.layers import Input
 
-# Make script reproducible
-random.seed(1)
+# Fix RNG for reproducibility
+np.random.seed(1)
+
+# Name of output file (in ../models/output/) where the model's weight will be stored
+OUTPUT_NAME = 'unet_patch_120_rot'
+
+# Size of patches to split images
+PATCH_SIZE = 200
+
+# Overlapping pixels between patches
+OVERLAP = 190
+
+# Number of classes on which to build the models
+NUM_CLASSES = 1
+
+# Pixel dimensions for training images
+IMG_NUM_DIM = 3
 
 valid_dir = "../../../project_files/data/training/"
 
-patch_size = 200
-overlap = 190
-num_classes = 1
-resize_threshold = 0.25
+# Threshold when resizing images
+RESIZE_THRESHOLD = 0.25
 
+# ================== LOAD TEST DATA ==================
 print("Loading test set...")
+
+# Load images
 test_imgs = load.load_test_set()
-print("Done!")
 
-print("Resizing test images...")
-resized_test_imgs = tr.resize_imgs(test_imgs, int(test_imgs[0].shape[0]/2), int(test_imgs[0].shape[0]/2))
-print("Done!")
+# Resize test images to half their original size
+resized_test_imgs = transformation.imgs_resize(test_imgs, int(test_imgs[0].shape[0]/2), int(test_imgs[0].shape[0]/2))
 
-print("Making patches from test set...")
-test_patches,overlap_image,nPatches = patch.make_patch_and_flatten(resized_test_imgs, patch_size, overlap)
-print("Done, " + str(len(test_patches)) + " patches made.")
+# Make patches out of the testset images
+test_patches, overlap_image, nPatches = patch.make_patch_and_flatten(resized_test_imgs, PATCH_SIZE, OVERLAP)
 
-print("Loading validation set and making patches...")
-val_patches,val_gt_patches = load.load_training_data(valid_dir)
+# ================== LOAD VALIDATION SET ==================
+print("Loading validation set...")
+
+# Load validation set (used to determine the best threshold to discriminate foreground from backgound)
+val_patches, val_gt_patches = load.load_training_data(load.PROVIDED_DATA_DIR)
 val_gt_patches = np.expand_dims(val_gt_patches,axis=3)
-print("Done, " + str(len(val_patches)) + " patches made.")
-# Loaded a set of images
 
-print("Resizing validation images...")
-resized_val_imgs = tr.resize_imgs(val_patches, patch_size, patch_size)
-resized_val_gts = tr.resize_binary_imgs(val_gt_patches, patch_size, patch_size,resize_threshold)
-print("Done!")
+# Resize validation images and groundtruth
+resized_val_imgs = transformation.imgs_resize(val_patches, PATCH_SIZE, PATCH_SIZE)
+resized_val_gts = transformation.groundtruth_resize(val_gt_patches, PATCH_SIZE, PATCH_SIZE, RESIZE_THRESHOLD)
 
-print("Loading model...")
-input_img = Input((patch_size, patch_size, 3), name='img')
-model = get_unet(input_img, num_classes, n_filters=16, dropout=0.6, batchnorm=True)
-
-model.load_weights('test_CNN_200_rot_dropout0.6.h5')
-print("Done!")
-
-print("Making predictions on test patches...")
-predictions_test = model.predict(test_patches,verbose=1)
-print("Done!")
-print("Making predictions on validation patches...")
-predictions_val = model.predict(resized_val_imgs,verbose=1)
-print("Done!")
-
-print("Reconstructing test predictions...")
-predictions = patch.reconstruct_from_flatten(np.squeeze(predictions_test), overlap_image, nPatches, overlap)
-print("Done!")
+# Make sure that groundtruths are filled with only 0's and 1's
 resized_val_gts = (resized_val_gts > 0.5).astype(int)
 
+# ================== LOAD MODEL ==================
+print("Loading model " + OUTPUT_NAME)
+
+input_img = Input((PATCH_SIZE, PATCH_SIZE, IMG_NUM_DIM), name='img')
+model = get_unet_200(input_img, NUM_CLASSES, n_filters=16, dropout=0.6, batchnorm=True)
+model.load_weights(submission.MODELS_OUTPUT_DIR + OUTPUT_NAME + '.h5')
+
+# ================== MAKE PREDICTIONS ==================
+print("Making predictions on test patches...")
+predictions_test = model.predict(test_patches, verbose=1)
+print("Making predictions on validation patches...")
+predictions_val = model.predict(resized_val_imgs, verbose=1)
+
+# Reconstruct test predictions
+predictions = patch.reconstruct_from_flatten(np.squeeze(predictions_test), overlap_image, nPatches, OVERLAP)
+
+# ================== FIND BEST THRESHOLD  ==================
 print("Looking for best threshold...")
-threshold_increment = 0.05
-threshold = np.arange(0,1,threshold_increment)
+THRESHOLD_INC = 0.05
+threshold = np.arange(0, 1, THRESHOLD_INC)
 best_score = 0
 best_thr = 0
-score_threshold = []
+
 for thr in threshold:
+    # Compute predictions on validation set and compute F1 score
     predictions_val_bin = (predictions_val > thr).astype(int)
     score = f1_custom(resized_val_gts,predictions_val_bin)
-    score_threshold.append(score)
-    if score > best_score:
+
+    if score > best_score: # We got our best score yet, save threshold
         best_score = score
         best_thr = thr
 
-score_threshold = np.asarray(score_threshold)
-np.savetxt('threshold.out', (threshold, score_threshold))
-
 print("Done, best F1 score: " + str(best_score)+", with threshold: " + str(best_thr))
 
-print("Making submission file and masks...")
+# ================== GENERATE SUBMISSION FILE ==================
+print("Creating submission file " + OUTPUT_NAME)
 predictions_bin = (predictions > best_thr).astype(int)
 
-resized_predictions = tr.resize_binary_imgs(np.expand_dims(predictions_bin,axis=3), 38,38, resize_threshold)
-
-test_dir = "../../../project_files/data/test_set_images/"
-mask_files = []
-full_mask_files = []
-full_test_files = []
-for i in range(len(predictions)):
-    full_test_files.append("test_"+str(i+1)+".tiff")
-for i in range(len(predictions)):
-    mask_files.append("masks/"+full_test_files[i])
-    im = Image.fromarray(np.squeeze(resized_predictions)[i].astype(np.float32))
-    im.save(mask_files[i])
-
-for i in range(len(predictions_bin)):
-    full_mask_files.append("full_masks/"+full_test_files[i])
-    im = Image.fromarray(np.squeeze(predictions_bin[i]).astype(np.float32))
-    im.save(full_mask_files[i])
-
-sub.predictions_to_submission(predictions_bin, "test_model_200_final.csv",resize_threshold,patch_size_submission=8)
-print("Done, submission file saved.")
+FOREGROUND_THRESHOLD = 0.25
+submission.predictions_to_submission(predictions_bin, "test_model_200_final.csv", FOREGROUND_THRESHOLD, patch_size_submission=8)

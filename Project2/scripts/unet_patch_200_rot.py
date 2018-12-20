@@ -54,9 +54,6 @@ np.random.seed(1)
 
 # ================== LOAD ORIGINAL TRAINING DATA ==================
 print("Loading training data...")
-root_dir = "../../../project_files/data/"
-training_dir = root_dir + "training/"
-valid_dir = root_dir + "validation/"
 
 # Load original training dataset
 imgs, gt_imgs = load.load_training_data(load.PROVIDED_DATA_DIR)
@@ -80,7 +77,7 @@ all_train_gts = np.expand_dims(all_train_gts,axis=3)
 print("Loading validation data...")
 
 # Load validation images
-val_imgs, val_gt_imgs = load.load_training_data(valid_dir)
+val_imgs, val_gt_imgs = load.load_training_data(load.VALIDATION_DATA_DIR)
 
 # Rotate validation images and groundtruth
 rot_val_imgs = transformation.imgs_rotate(val_imgs, ROT_ANGLE)

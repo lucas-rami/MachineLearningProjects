@@ -36,7 +36,7 @@ IMG_NUM_DIM = 3
 # Fix RNG for reproducibility
 np.random.seed(1)
 
-# ================== LOAD ORIGINAL TRAINING DATA ==================
+# ================== LOAD TEST DATA ==================
 print("Loading test set...")
 
 # Load images
@@ -93,5 +93,5 @@ print("Best F1 score on validation set is " + str(round(best_score,4)) + ", with
 print("Creating submission file " + OUTPUT_NAME)
 predictions_bin = (predictions > best_thr).astype(int)
 
-THRESHOLD_FOREGROUND = 0.25
-submission.predictions_to_submission(predictions_bin, OUTPUT_NAME + ".csv", THRESHOLD_FOREGROUND)
+FOREGROUND_THRESHOLD = 0.25
+submission.predictions_to_submission(predictions_bin, OUTPUT_NAME + ".csv", FOREGROUND_THRESHOLD)
