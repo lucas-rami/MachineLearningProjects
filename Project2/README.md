@@ -25,10 +25,10 @@ However, we left the possibility to re-train any of the two basic models when ru
 
 Examples:
 
-* `python script/run.py :` generates the predictions without re-training anything.
-* `python script/run.py train:` re-trains the *Narrow Mapped U-Net* model.
-* `python script/run.py train train:` re-trains both models.
-* `python script/run.py anything train:` re-trains the *Fully Spatial U-Net* model.
+* `python scripts/run.py :` generates the predictions without re-training anything.
+* `python scripts/run.py train:` re-trains the *Narrow Mapped U-Net* model.
+* `python scripts/run.py train train:` re-trains both models.
+* `python scripts/run.py anything train:` re-trains the *Fully Spatial U-Net* model.
 
 A detailed description of our other scripts is provided in the following section.
 
