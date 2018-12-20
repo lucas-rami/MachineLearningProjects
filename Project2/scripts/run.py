@@ -17,8 +17,8 @@ if len(sys.argv > 3):
     sys.exit()
 
 # Decide which scripts to run
-run_train_120 = False if len(sys.argv) < 2 else (True if sys.argv[1] == "true" else False)
-run_train_200 = False if len(sys.argv) < 3 else (True if sys.argv[2] == "true" else False)
+run_train_120 = False if len(sys.argv) < 2 else (True if sys.argv[1] == "train" else False)
+run_train_200 = False if len(sys.argv) < 3 else (True if sys.argv[2] == "train" else False)
 
 # Run training if requested
 if run_train_120:

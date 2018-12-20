@@ -16,7 +16,7 @@ DATA_DIR = "../data/"
 
 TEST_IMAGES_DIR = DATA_DIR + "test_set_images/"
 PROVIDED_DATA_DIR = DATA_DIR + "training/"
-ADDITIONAL_DATA_DIR = DATA_DIR + "additionalDataset/"
+ADDITIONAL_DATA_DIR = DATA_DIR + "additionalDatasetSel/"
 VALIDATION_DATA_DIR = DATA_DIR + "validation/"
 
 TRAINING_SUB = "images/"
