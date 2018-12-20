@@ -14,12 +14,11 @@ from models.score import f1_score
 # External librairies
 import numpy as np
 import matplotlib.pyplot as plt
-import random
 from keras.layers import Input, Dropout
 from keras.callbacks import EarlyStopping, ModelCheckpoint, ReduceLROnPlateau
 from keras.optimizers import Adam
 
-# Name of output file (in ../models/output/) where the model's history will be stored
+# Name of output file (in ../models/output/) where the model's weight will be stored
 OUTPUT_NAME = 'UNET_patch_120_rot'
 
 # Size of patches to split images
@@ -95,7 +94,7 @@ EPOCHS = 80
 # Size of a batch for the model
 BATCH_SIZE = 100
 
-# Number of classes on which to build the models
+# Number of classes on which to build the model
 NUM_CLASSES = 1
 
 # Set up the model
