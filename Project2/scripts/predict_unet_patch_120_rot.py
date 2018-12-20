@@ -60,7 +60,7 @@ val_gt_patches = (val_gt_patches > 0.5).astype(int)
 print("Loading model " + OUTPUT_NAME)
 
 input_img = Input((PATCH_SIZE, PATCH_SIZE, IMG_NUM_DIM), name='img')
-model = get_unet_120(input_img, NUM_CLASSES, n_filters=16, dropout=0.4, batchnorm=True)
+model = get_unet_120(input_img, num_classes=NUM_CLASSES, n_filters=16, dropout=0.4, batchnorm=True)
 model.load_weights(submission.MODELS_OUTPUT_DIR + OUTPUT_NAME + '.h5')
 
 # ================== MAKE PREDICTIONS ==================

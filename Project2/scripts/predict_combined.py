@@ -66,7 +66,7 @@ def main(argv=None):
     # Load first model
     print("Loading model " + OUTPUT_NAME_120)
     input_img_120 = Input((PATCH_SIZE_120, PATCH_SIZE_120, IMG_NUM_DIM), name='img')
-    model = get_unet_120(input_img_120, NUM_CLASSES, n_filters=16, dropout=0.4, batchnorm=True)
+    model = get_unet_120(input_img_120, num_classes=NUM_CLASSES, n_filters=16, dropout=0.4, batchnorm=True)
     model.load_weights(submission.MODELS_OUTPUT_DIR + OUTPUT_NAME_120 + '.h5')
 
     # Make predictions
@@ -94,7 +94,7 @@ def main(argv=None):
     # Load second model
     print("Loading model " + OUTPUT_NAME_200)
     input_img_200 = Input((PATCH_SIZE_200, PATCH_SIZE_200, IMG_NUM_DIM), name='img')
-    model = get_unet_200(input_img_200, NUM_CLASSES, n_filters=16, dropout=0.6, batchnorm=True)
+    model = get_unet_200(input_img_200, num_classes=NUM_CLASSES, n_filters=16, dropout=0.6, batchnorm=True)
     model.load_weights(submission.MODELS_OUTPUT_DIR + OUTPUT_NAME_200 + '.h5')
 
     # Make predictions
@@ -141,7 +141,7 @@ def main(argv=None):
         str(round(best_ratio,2)) +", and best threshold: " + str(round(best_overall_thr,2)))
 
     # ================== GENERATE SUBMISSION FILE ==================
-    COMBINED_OUTPUT = "test_combined_final"
+    COMBINED_OUTPUT = "combined_final"
     print("Creating submission file " + COMBINED_OUTPUT)
 
     predictions = best_ratio * predictions_120 + (1 - best_ratio) * predictions_200

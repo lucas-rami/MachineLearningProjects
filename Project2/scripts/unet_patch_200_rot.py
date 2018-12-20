@@ -125,7 +125,7 @@ def main(argv=None):
 
     # Set up the model
     input_img = Input((RESIZE_HEIGHT, RESIZE_WIDTH, IMG_NUM_DIM), name='img')
-    model = get_unet_200(input_img, NUM_CLASSES, n_filters=16, dropout=DROUPOUT, batchnorm=True)
+    model = get_unet_200(input_img, num_classes=NUM_CLASSES, n_filters=16, dropout=DROUPOUT, batchnorm=True)
     model.compile(optimizer=Adam(), loss="binary_crossentropy", metrics=[f1_score])
     model.summary()
 
