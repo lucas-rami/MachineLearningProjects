@@ -102,7 +102,7 @@ NUM_CLASSES = 1
 
 # Set up the model
 input_img = Input((PATCH_SIZE, PATCH_SIZE, IMG_NUM_DIM), name='img')
-model = get_unet_120(input_img, num_classes=1, n_filters=16, dropout=Dropout, batchnorm=True)
+model = get_unet_120(input_img, num_classes=1, n_filters=16, dropout=DROPOUT, batchnorm=True)
 model.compile(optimizer=Adam(), loss="binary_crossentropy", metrics=[f1_score, 'accuracy'])
 model.summary()
 
