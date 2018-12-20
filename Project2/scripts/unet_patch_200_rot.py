@@ -104,7 +104,7 @@ all_imgs = np.append(all_train_imgs, add_imgs,axis=0)
 all_gts = np.append(all_train_gts, add_gt_imgs,axis=0)
 
 # Make sure that groundtruths are filled with only 0's and 1's
-all_gts = (all_imgs > 0.5).astype(int)
+all_gts = (all_gts > 0.5).astype(int)
 all_val_gts = (all_val_gts > 0.5).astype(int)
 
 # ================== CREATE MODEL ==================
