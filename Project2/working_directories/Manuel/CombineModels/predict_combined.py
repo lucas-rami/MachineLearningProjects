@@ -23,6 +23,16 @@ from modelCNN_200 import get_unet
 import submission as sub
 import transformation as tr
 
+def f1_custom(labels, preds):
+    true_positives = np.sum(labels*preds)
+    try:
+        precision = true_positives / np.sum(preds)
+        recall = true_positives / np.sum(labels)
+        f1 = 2 * precision * recall / (precision + recall)
+    except ZeroDivisionError:
+        return 0.0
+    return f1
+
 # Make script reproducible
 random.seed(1)
 
