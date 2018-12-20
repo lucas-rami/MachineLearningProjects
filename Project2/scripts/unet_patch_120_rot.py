@@ -1,15 +1,18 @@
+#!/usr/bin/env python3
+
 #-*- coding: utf-8 -*-
 """UNET leveraging rotated images and a patch size of 120."""
 
 # API
-import src.load as load
-import src.patch as patch
-import src.submission as submission
-import src.transformation as transformation
-
-# Model
-from models.definitions.unet_120 import get_unet_120
-from models.score import f1_score
+import sys
+sys.path.append("../src")
+sys.path.append("../models")
+import load
+import patch
+import submission
+import transformation
+from definitions.unet_120 import get_unet_120
+from score import f1_score
 
 # External librairies
 import numpy as np

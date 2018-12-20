@@ -3,9 +3,12 @@
 
 # External libraires
 import tensorflow as tf
+import numpy as np
 
 def f1_score(y_true, y_pred):
     """Computes the F1 score for a list of predictions `y_pred`.
+
+    Used as a metric when training models. 
 
     Args:
         y_true: List of expected predictions.
@@ -25,3 +28,23 @@ def f1_score(y_true, y_pred):
     f_score = 2 * precision * recall / (precision + recall)
     f_score = tf.where(tf.is_nan(f_score), tf.zeros_like(f_score), f_score)
     return tf.reduce_mean(f_score)
+
+def f1_custom(labels, preds):
+    """Computes the F1 score for a list of predictions `preds`.
+
+    Used when doing predictions with different thresholds.
+
+    Args:
+        labels: List of expected predictions.
+        preds: List of actual predictions.
+    Returns:
+        float: The F1 score associated to the predictions.
+    """
+    true_positives = np.sum(labels*preds)
+    try:
+        precision = true_positives / np.sum(preds)
+        recall = true_positives / np.sum(labels)
+        f1 = 2 * precision * recall / (precision + recall)
+    except ZeroDivisionError:
+        return 0.0
+    return f1

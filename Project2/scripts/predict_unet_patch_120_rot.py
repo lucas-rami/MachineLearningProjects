@@ -1,40 +1,22 @@
 #!/usr/bin/env python3
 
+#-*- coding: utf-8 -*-
+"""Predictions for `unet_path_120_rot.py`."""
+
 # API
-import src.load as load
-import src.patch as patch
-import src.submission as submission
-import src.transformation as transformation
+import sys
+sys.path.append("../src")
+sys.path.append("../models")
+import load
+import patch
+import submission
+import transformation
+from definitions.unet_120 import get_unet_120
+from score import f1_custom
 
-# Model
-from models.definitions.unet_120 import get_unet_120
-
-import matplotlib.image as mpimg
+# External libraries
 import numpy as np
-import tensorflow as tf
-import matplotlib.pyplot as plt
-import scipy.misc as sp
-import os,sys
-from PIL import Image
-import keras
-from keras.models import *
 from keras.layers import Input
-from keras.regularizers import *
-from keras.optimizers import Adam
-import re
-from shutil import copyfile
-import math
-
-def f1_custom(labels, preds):
-    true_positives = np.sum(labels*preds)
-    try:
-        precision = true_positives / np.sum(preds)
-        recall = true_positives / np.sum(labels)
-        f1 = 2 * precision * recall / (precision + recall)
-    except ZeroDivisionError:
-        return 0.0
-    return f1
-
 
 # Name of output file (in ../models/output/) where the model's weight will be stored
 OUTPUT_NAME = 'UNET_patch_120_rot'
