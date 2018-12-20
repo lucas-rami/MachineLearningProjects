@@ -61,7 +61,7 @@ def img_mirror(image, is_horizontal_mirror):
 
     return mirrored
 
-def resize_imgs(images, height, width):
+def imgs_resize(images, height, width):
     """Resize a list of images to the given `height` and `width`.
     
     Args:
@@ -102,10 +102,10 @@ def groundtruth_resize(groundtruths, height, width, threshold):
     Returns:
         (N x height x width tensor): A list of resized groundtruths (with pixel values 0 or 1).
     """
-    resized_imgs = resize_imgs(groundtruths, height, width)
+    resized_imgs = imgs_resize(groundtruths, height, width)
     return (resized_imgs > threshold).astype(np.float)
 
-def rotate_imgs(imgs, angle):
+def imgs_rotate(imgs, angle):
     """Rotate images counter-clockwise with a given `angle`.
     
     Args:

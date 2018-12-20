@@ -12,11 +12,12 @@ import patch
 from transformation import img_uint8_to_float
 
 # ========= FILE PATHS =========
-DATA_DIR = "../../../project_files/data/"
+DATA_DIR = "../data/"
 
 TEST_IMAGES_DIR = DATA_DIR + "test_set_images/"
 PROVIDED_DATA_DIR = DATA_DIR + "training/"
-ADDITIONAL_DATA_DIR = DATA_DIR + "additionalDatasetSel/"
+ADDITIONAL_DATA_DIR = DATA_DIR + "additionalDataset/"
+VALIDATION_DATA_DIR = DATA_DIR + "validation/"
 
 TRAINING_SUB = "images/"
 GROUNDTRUTH_SUB = "groundtruth/"

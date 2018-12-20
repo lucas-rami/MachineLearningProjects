@@ -2,9 +2,13 @@
 """Converting predictions to submission format."""
 
 import numpy as np
+import pickle
 
 # The directory where to store submissions
 SUBMISSION_DIR = "../submissions/"
+
+# The directory where the models output
+MODELS_OUTPUT_DIR = "../models/output/"
 
 def patch_to_label(patch, foreground_threshold):
     """Outputs whether a patch should be considered being part of the foreground/background.
@@ -57,3 +61,14 @@ def predictions_to_submission(predictions, submission_filename, foreground_thres
         f.write('id,prediction\n')
         for i in range(len(predictions)):
             f.writelines('{}\n'.format(s) for s in prediction_to_submission_strings(predictions[i], i + 1, foreground_threshold, patch_size_submission=patch_size_submission))
+
+def save_training_history(output_name, train_history):
+    """Save a model's training history into a file. The file
+    will be created in the `MODELS_OUTPUT_DIR` directory.
+    
+    Args:
+        output_name (string): Filename to write.
+        train_hisotry: A model's history.
+    """
+    with open(MODELS_OUTPUT_DIR + output_name +'.history', 'wb') as f:
+        pickle.dump(train_history, f)
