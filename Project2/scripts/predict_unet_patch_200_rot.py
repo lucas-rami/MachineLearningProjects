@@ -36,8 +36,6 @@ NUM_CLASSES = 1
 # Pixel dimensions for training images
 IMG_NUM_DIM = 3
 
-valid_dir = "../../../project_files/data/training/"
-
 # Threshold when resizing images
 RESIZE_THRESHOLD = 0.25
 
@@ -106,4 +104,4 @@ print("Creating submission file " + OUTPUT_NAME)
 predictions_bin = (predictions > best_thr).astype(int)
 
 FOREGROUND_THRESHOLD = 0.25
-submission.predictions_to_submission(predictions_bin, "test_model_200_final.csv", FOREGROUND_THRESHOLD, patch_size_submission=8)
+submission.predictions_to_submission(predictions_bin, OUTPUT_NAME + ".csv", FOREGROUND_THRESHOLD, patch_size_submission=8)

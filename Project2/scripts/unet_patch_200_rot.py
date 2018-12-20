@@ -47,12 +47,11 @@ RESIZE_WIDTH = 200
 # Threshold when resizing groundtruths
 THRESHOLD_GT_RESIZE = 0.25
 
-# Fix RNG for reproducibility
-np.random.seed(1)
 
-# Loaded a set of images
+def main(argv=None):
 
-def main(argv=None):  # pylint: disable=unused-argument
+    # Fix RNG for reproducibility
+    np.random.seed(1)
     
     # ================== LOAD ORIGINAL TRAINING DATA ==================
     print("Loading training data...")

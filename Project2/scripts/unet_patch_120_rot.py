@@ -39,10 +39,11 @@ IMG_NUM_DIM = 3
 # Angle of rotation for images
 ROT_ANGLE = 45
 
-# Fix RNG for reproducibility
-np.random.seed(1)
-
 def main(argv=None):
+
+    # Fix RNG for reproducibility
+    np.random.seed(1)
+
     # ================== LOAD ORIGINAL TRAINING DATA ==================
     print("Loading training data...")
 
