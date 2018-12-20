@@ -2,8 +2,19 @@
 """Applying spatial transformation to images."""
 
 import numpy as np
-from helper import *
 from skimage.transform import resize, rotate
+
+def img_uint8_to_float(img):
+    """Converts an image with pixels in the uint8 format to a float format.
+    
+    Args:
+        img (H x W tensor): An image in the uint8 pixel format
+    Returns:
+        H x W tensor: the same image with pixels in the float format.
+    """
+    rimg = img - np.min(img)
+    rimg = (rimg / np.max(rimg)).astype(np.float)
+    return rimg
 
 def img_mirror(image, is_horizontal_mirror):
     """Mirros an image horizontally or verically.
@@ -50,31 +61,59 @@ def img_mirror(image, is_horizontal_mirror):
 
     return mirrored
 
-def resize_imgs(input_imgs, height, width):
-    '''Resize images to a given height and width.'''
+def resize_imgs(images, height, width):
+    """Resize a list of images to the given `height` and `width`.
+    
+    Args:
+        images (N x H x W (x Y) tensor): A list of images.
+        height (int): Height of resized images.
+        width (int): Width of resized images.
+    Returns:
+        (N x height x width (x Y) tensor): A list of resized images.
+    """
+
+    # Resize images
     resized_imgs = []
-    for i in range(len(input_imgs)):
-        resized_imgs.append(resize(input_imgs[i],(height,width)))
+    for i in range(len(images)):
+        resized_imgs.append(resize(images[i],(height,width)))
     resized_imgs = np.asarray(resized_imgs)
+
+    # Convert pixels from uint8 to float
     ndimen = len(resized_imgs.shape)
     if ndimen == 4:
-        if not np.issubdtype(type(resized_imgs[0,0,0,0]), np.float32):
+        if not np.issubdtype(type(resized_imgs[0,0,0,0]), np.float):
             for i in range(len(resized_imgs)):
                 resized_imgs[i] = img_uint8_to_float(resized_imgs[i])
     elif ndimen ==3:
-        if not np.issubdtype(type(resized_imgs[0,0,0]), np.float32):
+        if not np.issubdtype(type(resized_imgs[0,0,0]), np.float):
             for i in range(len(resized_imgs)):
                 resized_imgs[i] = img_uint8_to_float(resized_imgs[i])
     return resized_imgs
 
-def resize_binary_imgs(input_imgs, height, width, threshold):
-    '''Resize groundtruth images to given height and width, with entries 0 or 1
-    given by the threshold.'''
-    resized_imgs = resize_imgs(input_imgs,height,width)
-    return (resized_imgs > threshold).astype(np.float32)
+def groundtruth_resize(groundtruths, height, width, threshold):
+    """Resize groundtruth images to given `height` and `width`, with entries 
+    0 or 1 given by the `threshold`.
+
+    Args:
+        groundtruths (N x H x W tensor): A list of groundtruth images.
+        height (int): Height of resized images.
+        width (int): Width of resized images.
+        threshold (float): Threshold above which a pixel is considered to be in the foreground (between 0 and 1).
+    Returns:
+        (N x height x width tensor): A list of resized groundtruths (with pixel values 0 or 1).
+    """
+    resized_imgs = resize_imgs(groundtruths, height, width)
+    return (resized_imgs > threshold).astype(np.float)
 
 def rotate_imgs(imgs, angle):
-    '''Rotate images counter-clockwise with a given angle'''
+    """Rotate images counter-clockwise with a given `angle`.
+    
+    Args:
+        imgs (N x H x W (x Y) tensor): A list of images.
+        angle (float): The angle of rotation (counter-clockwise).
+    Returns:
+        N x H x W (x Y) tensor: The list of rotated images.
+    """
     rot_imgs = []
     for i in range(len(imgs)):
         rot_imgs.append(rotate(imgs[i], angle))

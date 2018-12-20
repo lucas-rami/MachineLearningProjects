@@ -9,6 +9,7 @@ import os
 import numpy as np
 import matplotlib.image as mpimg
 import patch
+from transformation import img_uint8_to_float
 
 # ========= FILE PATHS =========
 DATA_DIR = "../../../project_files/data/"
@@ -24,16 +25,19 @@ GROUNDTRUTH_SUB = "groundtruth/"
 SIZE_TEST_SET = 50
 
 def listdir_nohidden(path):
+    """Returns the list of non-hidden files in a directory.
+    Hidden files are those whose filename starts with ".".
+
+    Args:
+        path (string): Directory where to look for files.
+    Returns:
+        string list: The list of all non-hidden files in the directory.
+    """
     list = []
     for f in os.listdir(path):
         if not f.startswith('.'):
             list.append(f)
     return list
-
-def img_uint8_to_float(img):
-    rimg = img - np.min(img)
-    rimg = (rimg / np.max(rimg)).astype(np.float32)
-    return rimg
 
 def load_training_data_and_patch(path, patch_size, random_selection=False, proportion=1.0, overlap=0):
     """Loads a (possibly random) set of images and corresponding groundtruths
@@ -74,7 +78,8 @@ def load_training_data_and_patch(path, patch_size, random_selection=False, propo
 
 
 def load_training_data(path, random_selection=False, proportion=1.0):
-    """
+    """Loads a (possibly random) set of images and corresponding groundtruths
+    from the provided directory located at `path`.
 
     By default the function loads all images contained in the provided directory.
     If only `proportion` is specified, then the choice of images is not random and

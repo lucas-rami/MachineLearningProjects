@@ -22,13 +22,14 @@ def patch_to_label(patch, foreground_threshold):
     else:
         return 0
 
-def prediction_to_submission_strings(prediction, img_id, foreground_threshold,patch_size_submission=16):
+def prediction_to_submission_strings(prediction, img_id, foreground_threshold, patch_size_submission=16):
     """Yields the strings that should go into the submission file for a single `prediction` image.
 
     Args:
         prediction (H x W tensor): A prediction image.
         img_id (int): The prediction image ID (starting from 1).
         foreground_threshold (float): The average pixel gray value above which a patch is considered to be in the foreground.
+        patch_size_submission: The patch size expected in the submission file (16 by default).
     Returns:
         string generator: The set of strings that should be written into the submission file.
     """
@@ -48,6 +49,8 @@ def predictions_to_submission(predictions, submission_filename, foreground_thres
         predictions (N x H x W tensor): A list of prediction images.
         submission_filename (string): The filename for the newly created submission file.
         foreground_threshold (float): The average pixel gray value above which a patch is considered to be in the foreground.
+        patch_size_submission: The patch size expected in the submission file (16 by default).
+
     """
 
     with open(SUBMISSION_DIR + submission_filename, 'w') as f:
