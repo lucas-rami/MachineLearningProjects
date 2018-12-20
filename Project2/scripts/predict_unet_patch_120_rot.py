@@ -87,8 +87,7 @@ for thr in threshold:
     if score > best_score: # We got our best score yet, save threshold
         best_thr = thr
         best_score = score
-
-print("Best threshold is " + str(best_thr))
+print("Best F1 score on validation set is " + str(round(best_score,4)) + ", with threshold " + str(best_thr))
 
 # ================== GENERATE SUBMISSION FILE ==================
 print("Creating submission file " + OUTPUT_NAME)
