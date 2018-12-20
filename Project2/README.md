@@ -8,13 +8,13 @@
 
 ## Installing the Additional Dataset
 
-We leveraged an additional dataset found online (see report for details) to train our data.
+We leveraged an additional dataset found online (see report for details) to train our models.
 
 To install the additional dataset follow the following link https://drive.google.com/drive/folders/1dG17dy5RVQd-0nBu54FaMCqU5RFnQOIr?usp=sharing and download the `additionalDatasetSel.zip` archive. You then need to extract the archive under `data/` so that the satellite images and groundtruth are stored respectively under `data/additionalDatasetSel/images/` and `data/additionalDatasetSel/groundtruth/`.
 
 ## Running our Code
 
-Our main script is located under `scripts/run.py`. It leverages our combined model approach to the road segmentation problem (see report for details). Our submission already contains the trained models for our *Narrow Mapped U-Net* model and *Fully Spatial U-Net* model under `models/output/` so the script doesn't need to re-train the models before generating its predictions (the script can still take a lot of time to run beause it looks for an optimal combination of the 2 models and an optimal threshold to separate the roads from the rest of the image).
+Our main script is located under `scripts/run.py`. It leverages our combined model approach to the road segmentation problem (see report for details). Our submission already contains the trained models for our *Narrow Mapped U-Net* model and *Fully Spatial U-Net* model under `models/output/` so the script doesn't need to re-train the models before generating its predictions (the script can still take a lot of time to run beause it looks for an optimal combination of the 2 models and an optimal threshold to separate the roads from the rest of the image). The predictions are then stored under `submissions/combined_model.csv`.
 
 However, we left the possibility to re-train any of the two basic models when running `scripts/run.py`. In that regard the script takes up to 2 arguments from the command line:
 
@@ -54,7 +54,7 @@ A detailed description of our other scripts is provided in the following section
   * **`unet_patch_200_rot.py` :** Instantiates and trains our *Fully Spatial U-Net* model. The computed weights are stored under `models/output/unet_patch_200_rot.h5`. The model corresponding to this sript is stored under `models/definitions/unet_200.py`.
   * **`predict_unet_patch_120_rot.py` :** Makes predictions for our *Narrow Mapped U-Net* model. The script assumes that `unet_patch_120_rot.py` was executed before and that the computed weights for this model exist under `models/output/unet_patch_120_rot.h5`. The prediction file for these predictions will be stored under `submissions/unet_patch_120_rot.csv`.
   * **`predict_unet_patch_200_rot.py` :** Makes predictions for our *Fully Spatial U-Net* model. The script assumes that `unet_patch_200_rot.py` was executed before and that the computed weights for this model exist under `models/output/unet_patch_200_rot.h5`. The prediction file for these predictions will be stored under `submissions/unet_patch_200_rot.csv`.
-  * **`predict_combined.py` :** Makes predictions for our combined model. The script assumes that both `unet_patch_120_rot.py` and `unet_patch_200_rot.py` were executed before and that the computed weights for these models exist under `models/output/unet_patch_120_rot.h5` and `models/output/unet_patch_200_rot.h5`. The prediction file for these predictions will be stored under `submissions/combined_final.csv`.
+  * **`predict_combined.py` :** Makes predictions for our combined model. The script assumes that both `unet_patch_120_rot.py` and `unet_patch_200_rot.py` were executed before and that the computed weights for these models exist under `models/output/unet_patch_120_rot.h5` and `models/output/unet_patch_200_rot.h5`. The prediction file for these predictions will be stored under `submissions/combined_model.csv`.
 
 * **`src/` :** Contains the API used throughout the project.
   * **`load.py` :** Everything related to loading images from the file system. Data must be located in `project_files/data`.

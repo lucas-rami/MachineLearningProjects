@@ -141,7 +141,7 @@ def main(argv=None):
         str(round(best_ratio,2)) +", and best threshold: " + str(round(best_overall_thr,2)))
 
     # ================== GENERATE SUBMISSION FILE ==================
-    COMBINED_OUTPUT = "combined_final"
+    COMBINED_OUTPUT = "combined_model"
     print("Creating submission file " + COMBINED_OUTPUT)
 
     predictions = best_ratio * predictions_120 + (1 - best_ratio) * predictions_200
